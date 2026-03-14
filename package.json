@@ -1,13 +1,13 @@
 {
   "name": "@oxog/codemap",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "AST-based codebase structure extractor for token-efficient LLM navigation",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "codemap": "./dist/cli.js"
+    "codemap": "dist/cli.js"
   },
   "exports": {
     ".": {
