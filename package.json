@@ -1,0 +1,89 @@
+{
+  "name": "@oxog/codemap",
+  "version": "0.0.1",
+  "description": "AST-based codebase structure extractor for token-efficient LLM navigation",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "codemap": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./plugins": {
+      "import": {
+        "types": "./dist/plugins/index.d.ts",
+        "default": "./dist/plugins/index.js"
+      },
+      "require": {
+        "types": "./dist/plugins/index.d.cts",
+        "default": "./dist/plugins/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "llms.txt"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm run test:coverage"
+  },
+  "keywords": [
+    "codemap",
+    "codebase",
+    "ast",
+    "parser",
+    "llm",
+    "context-window",
+    "token-efficient",
+    "zero-dependency",
+    "typescript",
+    "plugin",
+    "micro-kernel",
+    "code-analysis",
+    "structural-analysis",
+    "multi-language",
+    "developer-tools",
+    "ai-tools"
+  ],
+  "author": "Ersin Koç",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ersinkoc/codemap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ersinkoc/codemap/issues"
+  },
+  "homepage": "https://codemap.oxog.dev",
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}

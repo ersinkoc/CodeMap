@@ -1,0 +1,10 @@
+# .codemapignore
+# Files and directories to exclude from codemap scanning
+
+*.test.ts
+*.spec.ts
+*.stories.tsx
+__mocks__/
+__tests__/
+fixtures/
+generated/

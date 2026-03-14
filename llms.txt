@@ -1,0 +1,87 @@
+# @oxog/codemap
+
+> AST-based codebase structure extractor for token-efficient LLM navigation
+
+## Install
+
+npm install @oxog/codemap
+
+## Basic Usage
+
+import { scan } from '@oxog/codemap';
+const map = await scan('./src');
+// map.files, map.dependencyGraph, map.stats
+
+## API Summary
+
+### Core
+- `scan(root, options?)` - Scan codebase and return structural map
+- `codemap()` - Create builder for complex configuration
+- `createPlugin(config)` - Create a custom plugin
+- `defineConfig(config)` - Type-safe config helper
+
+### Builder
+- `.root(path)` - Set root directory
+- `.format(type)` - Set output format
+- `.ignore(...patterns)` - Add ignore patterns
+- `.languages([...])` - Restrict languages
+- `.incremental()` - Enable incremental scanning
+- `.withComplexity()` - Enable complexity scoring
+- `.withTokenCounts()` - Enable token estimation
+- `.watch()` - Start watching for changes
+- `.scan()` - Execute scan
+
+### CLI
+- `npx @oxog/codemap` - Scan with defaults
+- `npx @oxog/codemap --watch` - Watch mode
+- `npx @oxog/codemap --incremental` - Incremental scan
+- `npx @oxog/codemap inject` - Inject into CLAUDE.md
+- `npx @oxog/codemap hook install` - Git pre-commit hook
+- `npx @oxog/codemap init` - Initialize config
+
+### Languages
+typescript, go, python, rust, php, java, csharp (auto-detected by extension)
+
+### Formats
+compact (default), json, markdown, llms-txt
+
+## Common Patterns
+
+### Scan and write to file
+import { scan } from '@oxog/codemap';
+import { writeFileSync } from 'fs';
+const map = await scan('./src', { format: 'compact' });
+writeFileSync('.codemap/map.txt', map.output);
+
+### Custom language plugin
+import { codemap, createPlugin } from '@oxog/codemap';
+const kotlin = createPlugin({
+  name: 'kotlin',
+  version: '1.0.0',
+  install(kernel) {
+    kernel.registerParser({ name: 'kotlin', extensions: ['.kt'], parse: (content) => ({...}) });
+  },
+});
+await codemap().use(kotlin).scan();
+
+### Watch with callback
+import { codemap } from '@oxog/codemap';
+const w = codemap().root('./src').watch();
+w.on('change', (e) => console.log(e.map.stats.totalTokens));
+
+## Errors
+
+| Code | Meaning | Solution |
+|------|---------|----------|
+| ROOT_NOT_FOUND | Root directory doesn't exist | Check path |
+| NO_FILES_FOUND | No scannable files in root | Check ignore patterns |
+| PARSER_ERROR | Language parser failed on file | File may have syntax errors |
+| CONFIG_ERROR | Invalid configuration | Check config file format |
+| WATCH_ERROR | File watcher failed | Check permissions |
+| CACHE_CORRUPT | Incremental cache is invalid | Delete .codemap/cache.json |
+| GIT_NOT_FOUND | Git not available for incremental | Install git or use full scan |
+
+## Links
+
+- Docs: https://codemap.oxog.dev
+- GitHub: https://github.com/ersinkoc/codemap

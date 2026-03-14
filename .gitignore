@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.codemap/
+!.codemap/map.txt
+coverage/
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*

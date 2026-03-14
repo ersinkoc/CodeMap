@@ -1,0 +1,413 @@
+<!-- CODEMAP:START -->
+## Codebase Map
+Always read this map before opening source files. Only open files you need to edit.
+
+# CODEMAP — D:\Codebox\__NPM__\CodeMap\src
+# Generated: 2026-03-14 | Files: 37 | LOC: 6,434 | ~69,074 tokens
+
+## EXTERNAL DEPS
+  node:path: resolve, join, extname, relative
+  node:fs: existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync, statSync, unlinkSync, chmodSync, watch, type FSWatcher
+  node:child_process: execFileSync
+
+## FILES
+
+━━ builder.ts (149L) [~1,461T]
+  ◆ CodemapBuilder (181L)
+    .root(path: string) → this
+    .format(type: FormatType | FormatType[]) → this
+    .ignore(...patterns: string[]) → this
+    .languages(langs: LanguageId[]) → this
+    .incremental() → this
+    .withComplexity() → this
+    .withTokenCounts() → this
+    .monorepo() → this
+    .debounce(ms: number) → this
+    .use(plugin: CodemapPlugin) → this
+    .async scan() → Promise<ScanResult>
+    .watch() → CodemapWatcher
+    .[private] buildConfig() → CodemapConfig
+    .[private] buildKernel(config: CodemapConfig) → Kernel
+
+━━ cli.ts (323L) [~3,269T]
+  ƒ parseArgs(argv: string[]) → CliArgs
+  ƒ printHelp()
+  ƒ getVersion() → string
+  ƒ async runScan(config: CodemapConfig) → Promise<ScanResult>
+  ƒ runInit(cwd: string)
+  ƒ async main() → Promise<void>
+  ◇ CliArgs { root?: string, format?: string, watch?: boolean, incremental?: boolean, full?: boolean, debounce?: number, complexity?: boolean, monorepo?: boolean, command?: string, subcommand?: string, help?: boolean, version?: boolean }
+
+━━ config.ts (137L) [~1,580T]
+  ƒ defineConfig(config: Partial<CodemapConfig>) → Partial<CodemapConfig>
+  ƒ loadConfig(cwd: string, overrides?: Partial<CodemapConfig>) → CodemapConfig
+  ƒ scanOptionsToConfig(root: string, options?: ScanOptions) → Partial<CodemapConfig>
+  ƒ validateConfig(config: Partial<CodemapConfig>)
+  ƒ loadRcConfig(cwd: string) → Partial<CodemapConfig>
+  ƒ loadPackageJsonConfig(cwd: string) → Partial<CodemapConfig>
+  ƒ loadConfigFile(cwd: string) → Partial<CodemapConfig>
+  ƒ parseFormatString(formatStr: string) → FormatType[]
+  κ DEFAULT_CONFIG: CodemapConfig
+  κ VALID_FORMATS
+  κ VALID_LANGUAGES
+
+━━ errors.ts (50L) [~657T]
+  ◆ CodemapError ← Error (11L)
+    .constructor(message: string)
+  ◆ ParserError ← CodemapError (11L)
+    .constructor(message: string, context?: Record<string, unknown>)
+  ◆ ConfigError ← CodemapError (6L)
+    .constructor(message: string, context?: Record<string, unknown>)
+  ◆ PluginError ← CodemapError (10L)
+    .constructor(message: string, context?: Record<string, unknown>)
+  ◆ ScanError ← CodemapError (6L)
+    .constructor(message: string, context?: Record<string, unknown>)
+
+━━ index.ts (106L) [~1,617T]
+  ƒ async scan(root?: string, options?: ScanOptions) → Promise<ScanResult>
+  ƒ codemap() → CodemapBuilder
+  ƒ createPlugin()
+  ↗ defineConfig from ./config.js
+
+━━ kernel.ts (247L) [~2,667T]
+  ƒ createKernel(config: CodemapConfig) → Kernel
+  ◆ Kernel ⊳ CodemapKernel<CodemapContext> (295L)
+    .constructor(config: CodemapConfig)
+    .use(plugin: CodemapPlugin)
+    .async unregister(name: string) → Promise<void>
+    .listPlugins() → readonly CodemapPlugin[]
+    .registerParser(parser: LanguageParser)
+    .getParser(name: string) → LanguageParser | undefined
+    .getParserForExtension(ext: string) → LanguageParser | undefined
+    .listParsers() → readonly LanguageParser[]
+    .registerFormatter(formatter: OutputFormatter)
+    .getFormatter(name: string) → OutputFormatter | undefined
+    .listFormatters() → readonly OutputFormatter[]
+    .emit(event: KernelEvent, ...args: unknown[])
+    .on(event: KernelEvent, listener: EventListener)
+    .off(event: KernelEvent, listener: EventListener)
+    .getConfig() → CodemapConfig
+    .updateConfig(config: CodemapConfig)
+    .async scan() → Promise<ScanResult>
+
+━━ plugins/core/compact-formatter.ts (286L) [~3,205T]
+  ƒ fmtNum(n: number) → string
+  ƒ fmtParams(params: readonly{name: string;type: string;optional?: boolean | undefined}[]) → string
+  ƒ fmtReturn(returnType: string) → string
+  ƒ fmtDecorators(decorators?: readonly string[]) → string
+  ƒ fmtFunction(fn: FunctionInfo, indent: string, symbol: string) → string
+  ƒ formatHeader(result: ScanResult) → string
+  ƒ formatExternalDeps(externalDeps: Readonly<Record<string, readonly string[]>>) → string
+  ƒ formatFunctions(functions: readonly FunctionInfo[]) → string[]
+  ƒ formatClasses(classes: readonly ClassInfo[]) → string[]
+  ƒ formatInterfaces(interfaces: readonly InterfaceInfo[]) → string[]
+  ƒ formatTypes(types: readonly TypeInfo[]) → string[]
+  ƒ formatEnums(enums: readonly EnumInfo[]) → string[]
+  ƒ formatConstants(constants: readonly ConstantInfo[]) → string[]
+  ƒ formatComponents(components: readonly ComponentInfo[]) → string[]
+  ƒ formatHooks(hooks: readonly HookInfo[]) → string[]
+  ƒ formatStructs(structs: readonly StructInfo[]) → string[]
+  ƒ formatTraits(traits: readonly TraitInfo[]) → string[]
+  ƒ formatReExports(file: FileAnalysis) → string[]
+  ƒ formatPackages(file: FileAnalysis) → string[]
+  ƒ formatFile(file: FileAnalysis) → string
+  ƒ formatDependencyGraph(graph: Readonly<Record<string, readonly string[]>>) → string
+  ƒ formatCompact(result: ScanResult, _options?: Record<string, unknown>) → string
+  ƒ createCompactFormatterPlugin() → CodemapPlugin
+  κ opt
+  κ compactFormatter: OutputFormatter
+
+━━ plugins/core/index.ts (3L) [~65T]
+  ↗ createTypescriptParserPlugin from ./typescript-parser.js
+  ↗ createCompactFormatterPlugin, formatCompact from ./compact-formatter.js
+
+━━ plugins/core/typescript-parser.ts (576L) [~5,753T]
+  ƒ parseTypeScript(content: string, filePath: string) → FileAnalysis
+
+━━ plugins/index.ts (24L) [~487T]
+  ↗ createTypescriptParserPlugin from ./core/typescript-parser.js
+  ↗ createCompactFormatterPlugin from ./core/compact-formatter.js
+  ↗ createGoParserPlugin from ./optional/go-parser.js
+  ↗ createPythonParserPlugin from ./optional/python-parser.js
+  ↗ createRustParserPlugin from ./optional/rust-parser.js
+  ↗ createPhpParserPlugin from ./optional/php-parser.js
+  ↗ createJavaParserPlugin from ./optional/java-parser.js
+  ↗ createCsharpParserPlugin from ./optional/csharp-parser.js
+  ↗ createJsonFormatterPlugin from ./optional/json-formatter.js
+  ↗ createMarkdownFormatterPlugin from ./optional/markdown-formatter.js
+  ↗ createLlmsTxtFormatterPlugin from ./optional/llms-txt-formatter.js
+  ↗ createComplexityPlugin, calculateComplexity from ./optional/complexity.js
+  ↗ createIgnorePlugin from ./optional/ignore.js
+  ↗ createIncrementalPlugin from ./optional/incremental.js
+  ↗ createGitHooksPlugin, installHook, uninstallHook from ./optional/git-hooks.js
+  ↗ createClaudeMdPlugin, injectIntoClaudeMd from ./optional/claude-md.js
+  ↗ createMonorepoPlugin, detectWorkspaces from ./optional/monorepo.js
+
+━━ plugins/optional/claude-md.ts (42L) [~563T]
+  ƒ injectIntoClaudeMd(dir: string, mapContent: string) → boolean
+  ƒ buildInjection(mapContent: string) → string
+  ƒ createClaudeMdPlugin() → CodemapPlugin
+  κ START_MARKER
+  κ END_MARKER
+
+━━ plugins/optional/complexity.ts (69L) [~771T]
+  ƒ calculateComplexity(code: string) → number
+  ƒ calculateFileComplexity(file: FileAnalysis) → number
+  ƒ createComplexityPlugin() → CodemapPlugin
+  κ COMPLEXITY_KEYWORDS
+
+━━ plugins/optional/csharp-parser.ts (617L) [~7,133T]
+  ƒ parseVisibility(raw: string | undefined) → CsharpVisibility | undefined
+  ƒ isExported(vis: CsharpVisibility | undefined) → boolean
+  ƒ parseCsharp(content: string, filePath: string) → FileAnalysis
+  τ CsharpVisibility = 'public' | 'protected' | 'private'
+  κ CONTROL_KEYWORDS
+  κ MODIFIER_PATTERN
+
+━━ plugins/optional/git-hooks.ts (23L) [~299T]
+  ƒ createGitHooksPlugin() → CodemapPlugin
+  ƒ installHook(dir: string) → boolean
+  ƒ uninstallHook(dir: string) → boolean
+
+━━ plugins/optional/go-parser.ts (330L) [~3,545T]
+  ƒ isExported(name: string) → boolean
+  ƒ parseGoParams(paramsStr: string) → ParamInfo[]
+  ƒ parseGoReturnType(returnStr: string) → string
+  ƒ extractInterfaceMethods(bodyLines: readonly string[]) → {
+  ƒ parseGo(content: string, filePath: string) → FileAnalysis
+  κ methods: FunctionInfo[]
+  κ embeds: string[]
+  κ trimmed
+  κ methodMatch
+  κ name
+  κ paramsStr
+  κ returnStr
+  κ embedMatch
+
+━━ plugins/optional/ignore.ts (17L) [~256T]
+  ƒ createIgnorePlugin() → CodemapPlugin
+
+━━ plugins/optional/incremental.ts (63L) [~642T]
+  ƒ loadCache(outputDir: string) → CacheData | null
+  ƒ saveCache(outputDir: string, result: ScanResult)
+  ƒ getIncrementalFiles(rootDir: string, outputDir: string) → string[]| null
+  ƒ createIncrementalPlugin() → CodemapPlugin
+  ◇ CacheData { timestamp: string, files: Record<string, string> }
+
+━━ plugins/optional/index.ts (16L) [~301T]
+  ↗ createGoParserPlugin from ./go-parser.js
+  ↗ createPythonParserPlugin from ./python-parser.js
+  ↗ createRustParserPlugin from ./rust-parser.js
+  ↗ createPhpParserPlugin from ./php-parser.js
+  ↗ createJavaParserPlugin from ./java-parser.js
+  ↗ createCsharpParserPlugin from ./csharp-parser.js
+  ↗ createJsonFormatterPlugin from ./json-formatter.js
+  ↗ createMarkdownFormatterPlugin from ./markdown-formatter.js
+  ↗ createLlmsTxtFormatterPlugin from ./llms-txt-formatter.js
+  ↗ createComplexityPlugin, calculateComplexity from ./complexity.js
+  ↗ createIgnorePlugin from ./ignore.js
+  ↗ createIncrementalPlugin, getIncrementalFiles from ./incremental.js
+  ↗ createGitHooksPlugin, installHook, uninstallHook from ./git-hooks.js
+  ↗ createClaudeMdPlugin, injectIntoClaudeMd from ./claude-md.js
+  ↗ createMonorepoPlugin, detectWorkspaces from ./monorepo.js
+
+━━ plugins/optional/java-parser.ts (440L) [~4,879T]
+  ƒ parseVisibility(raw: string | undefined) → JavaVisibility | undefined
+  ƒ isExported(vis: JavaVisibility | undefined) → boolean
+  ƒ parseJava(content: string, filePath: string) → FileAnalysis
+  τ JavaVisibility = 'public' | 'protected' | 'private'
+  κ CONTROL_KEYWORDS
+
+━━ plugins/optional/json-formatter.ts (51L) [~424T]
+  ƒ formatJson(result: ScanResult) → string
+  ƒ createJsonFormatterPlugin() → CodemapPlugin
+  κ jsonFormatter: OutputFormatter
+
+━━ plugins/optional/llms-txt-formatter.ts (117L) [~1,153T]
+  ƒ formatLlmsTxt(result: ScanResult) → string
+  ƒ formatFileStructure(file: FileAnalysis, lines: string[])
+  ƒ formatSig(func: FunctionInfo) → string
+  ƒ createLlmsTxtFormatterPlugin() → CodemapPlugin
+  κ llmsTxtFormatter: OutputFormatter
+
+━━ plugins/optional/markdown-formatter.ts (134L) [~1,388T]
+  ƒ formatMarkdown(result: ScanResult) → string
+  ƒ formatFileContent(file: FileAnalysis, lines: string[])
+  ƒ formatFuncSig(func: FunctionInfo) → string
+  ƒ createMarkdownFormatterPlugin() → CodemapPlugin
+  κ markdownFormatter: OutputFormatter
+
+━━ plugins/optional/monorepo.ts (105L) [~1,223T]
+  ƒ detectWorkspaces(rootDir: string) → string[]
+  ƒ parsePnpmWorkspaces(content: string, rootDir: string) → string[]
+  ƒ resolveGlobWorkspaces(patterns: string[], rootDir: string) → string[]
+  ƒ createMonorepoPlugin() → CodemapPlugin
+
+━━ plugins/optional/php-parser.ts (385L) [~3,757T]
+  ƒ parsePhp(content: string, filePath: string) → FileAnalysis
+
+━━ plugins/optional/python-parser.ts (392L) [~4,079T]
+  ƒ getIndent(line: string) → number
+  ƒ parsePythonParams(paramsStr: string) → ParamInfo[]
+  ƒ findIndentBlockEnd(lines: readonly string[], startLine: number, blockIndent: number) → number
+  ƒ collectDecorators(lines: readonly string[], lineIdx: number) → string[]
+  ƒ extractAllList(content: string) → Set<string>| null
+  ƒ isPythonExported(name: string, allList: Set<string>| null) → boolean
+  ƒ extractClassMethods(lines: readonly string[], classStartLine: number, classEndLine: number, classIndent: number, allList: Set<string>| null) → FunctionInfo[]
+  ƒ extractClassProperties(lines: readonly string[], classStartLine: number, classEndLine: number, classIndent: number) → PropertyInfo[]
+  ƒ parsePython(content: string, filePath: string) → FileAnalysis
+  ƒ createPythonParserPlugin() → CodemapPlugin
+  κ pythonParser: LanguageParser
+
+━━ plugins/optional/rust-parser.ts (473L) [~4,653T]
+  ƒ parseRust(content: string, filePath: string) → FileAnalysis
+
+━━ plugins/registry.ts (113L) [~1,251T]
+  ƒ getCorePlugins() → CodemapPlugin[]
+  ƒ getParserPlugin(language: LanguageId) → CodemapPlugin
+  ƒ autoDetectPlugins(extensions: Set<string>) → CodemapPlugin[]
+  ƒ getFormatterPlugins(formats: readonly string[]) → CodemapPlugin[]
+  ƒ getFeaturePlugins()
+  κ EXTENSION_LANGUAGE_MAP: Record<string, LanguageId>
+  κ plugins: CodemapPlugin[]
+
+━━ scanner.ts (111L) [~1,204T]
+  ƒ getLanguageForExtension(ext: string) → string | undefined
+  ƒ getSupportedExtensions() → string[]
+  ƒ scanDirectory()
+  ƒ walk(dir: string)
+  ƒ readIgnoreFile(dir: string) → string[]
+  ◇ ScannedFile { absolutePath: string, relativePath: string, language: string, content: string }
+  κ EXTENSION_MAP: Readonly<Record<string, string>>
+  κ allPatterns
+  κ files: ScannedFile[]
+
+━━ token-estimator.ts (37L) [~594T]
+  ƒ estimateTokens(content: string, language?: LanguageId | string) → number
+  ƒ estimateOutputTokens(output: string) → number
+  ƒ countLoc(content: string) → number
+  κ CHARS_PER_TOKEN: Record<string, number>
+
+━━ types.ts (255L) [~2,677T]
+  ◇ WatchConfig { debounce?: number | undefined, polling?: boolean | undefined, interval?: number | undefined }
+  ◇ CodemapConfig { root: string, output: string, format: FormatType | readonly FormatType[], languages?: readonly LanguageId[]| undefined, ignore?: readonly string[]| undefined, incremental?: boolean | undefined, watch?: WatchConfig | boolean | undefined, complexity?: boolean | undefined, tokenCounts?: boolean | undefined, monorepo?: boolean | undefined }
+  ◇ ScanOptions { format?: FormatType | readonly FormatType[]| undefined, incremental?: boolean | undefined, complexity?: boolean | undefined, tokenCounts?: boolean | undefined, monorepo?: boolean | undefined, ignore?: readonly string[]| undefined, languages?: readonly LanguageId[]| undefined }
+  ◇ ParamInfo { name: string, type: string, optional?: boolean | undefined, defaultValue?: string | undefined }
+  ◇ PropertyInfo { name: string, type: string, scope?: | | | undefined, static?: boolean | undefined, readonly?: boolean | undefined, optional?: boolean | undefined }
+  ◇ FunctionInfo { name: string, params: readonly ParamInfo[], returnType: string, exported: boolean, async?: boolean | undefined, generator?: boolean | undefined, static?: boolean | undefined, scope?: | | | undefined, complexity?: number | undefined, loc: number, decorators?: readonly string[]| undefined }
+  ◇ ClassInfo { name: string, extends?: string | undefined, implements?: readonly string[]| undefined, methods: readonly FunctionInfo[], properties: readonly PropertyInfo[], exported: boolean, abstract?: boolean | undefined, decorators?: readonly string[]| undefined, loc: number }
+  ◇ InterfaceInfo { name: string, extends?: readonly string[]| undefined, properties: readonly PropertyInfo[], methods?: readonly FunctionInfo[]| undefined, exported: boolean, generics?: readonly string[]| undefined }
+  ◇ TypeInfo { name: string, type: string, exported: boolean, generics?: readonly string[]| undefined }
+  ◇ EnumInfo { name: string, members: readonly string[], exported: boolean }
+  ◇ ConstantInfo { name: string, type: string, exported: boolean }
+  ◇ ComponentInfo ← FunctionInfo { kind: ; }
+  ◇ HookInfo ← FunctionInfo { kind: ; }
+  ◇ StructInfo { name: string, fields: readonly PropertyInfo[], methods: readonly FunctionInfo[], exported: boolean, derives?: readonly string[]| undefined, embeds?: readonly string[]| undefined }
+  ◇ TraitInfo { name: string, methods: readonly FunctionInfo[], exported: boolean, superTraits?: readonly string[]| undefined }
+  ◇ ImportInfo { from: string, names: readonly string[], kind: |, isTypeOnly?: boolean | undefined }
+  ◇ ExportInfo { from?: string | undefined, names: readonly string[], isReExport: boolean }
+  ◇ PackageInfo { name: string, path: string }
+  ◇ FileAnalysis { path: string, language: LanguageId, loc: number, estimatedTokens: number, complexity?: number | undefined, imports: readonly ImportInfo[], exports: readonly ExportInfo[], functions: readonly FunctionInfo[], classes: readonly ClassInfo[], interfaces: readonly InterfaceInfo[], types: readonly TypeInfo[], enums: readonly EnumInfo[], constants: readonly ConstantInfo[], components?: readonly ComponentInfo[]| undefined, hooks?: readonly HookInfo[]| undefined, structs?: readonly StructInfo[]| undefined, traits?: readonly TraitInfo[]| undefined, packages?: readonly PackageInfo[]| undefined }
+  ◇ ScanStats { fileCount: number, totalLoc: number, totalTokens: number, languageBreakdown: Readonly<Record<string, number>>, scanDurationMs: number, incremental: boolean, changedFiles?: number | undefined }
+  ◇ ScanResult { root: string, timestamp: string, files: readonly FileAnalysis[], dependencyGraph: Readonly<Record<string, readonly string[]>>, externalDeps: Readonly<Record<string, readonly string[]>>, stats: ScanStats, output?: string | undefined, workspaces?: Readonly<Record<string, ScanResult>>| undefined }
+  ◇ CodemapContext { config: CodemapConfig, files: FileAnalysis[], dependencyGraph: Record<string, string[]>, externalDeps: Record<string, string[]> }
+  ◇ LanguageParser { name: string, extensions: readonly string[] }
+  ◇ OutputFormatter { name: string, extension: string }
+  ◇ CodemapPlugin { name: string, version: string, dependencies?: readonly string[]| undefined }
+  ◇ CodemapKernel
+    .registerParser(parser: LanguageParser)
+    .registerFormatter(formatter: OutputFormatter)
+    .getParser(name: string) → LanguageParser | undefined
+    .getParserForExtension(ext: string) → LanguageParser | undefined
+    .getFormatter(name: string) → OutputFormatter | undefined
+    .listParsers() → readonly LanguageParser[]
+    .listFormatters() → readonly OutputFormatter[]
+    .emit(event: KernelEvent, ...args: unknown[])
+    .on(event: KernelEvent, listener: EventListener)
+    .off(event: KernelEvent, listener: EventListener)
+    .getConfig() → CodemapConfig
+  ◇ WatchEvent { changedFiles: readonly string[], map: ScanResult, timestamp: string }
+  ◇ CodemapWatcher
+    .on(listener: (event: WatchEvent)
+    .on(listener: (error: Error)
+    .close()
+  τ LanguageId = | 'typescript' | 'go' | 'python' | 'rust' | 'php' | 'java' | 'csharp'
+  τ FormatType = 'compact' | 'json' | 'markdown' | 'llms-txt'
+  τ KernelEvent = | 'plugin:registered' | 'plugin:unregistered' | 'scan:start' | 'scan:file' | ...
+  τ EventListener = (...args: unknown[])=>void
+
+━━ utils/brace-counter.ts (93L) [~1,143T]
+  ƒ createBraceState() → BraceState
+  ƒ updateBraceState(state: BraceState, ch: string)
+  ƒ countBraceDepth(line: string) → number
+  ƒ countParenDepth(line: string) → number
+  ƒ findBlockEnd(lines: readonly string[], startLine: number) → number
+  ƒ extractBraceContent(text: string, startPos: number) → string
+  ƒ isClosingBraceLine(line: string) → boolean
+  ◇ BraceState { braces: number, parens: number, brackets: number }
+
+━━ utils/comment-stripper.ts (232L) [~1,911T]
+  ƒ stripComments(content: string, language: string) → string
+  ƒ stripPythonComments(content: string) → string
+
+━━ utils/git.ts (127L) [~1,401T]
+  ƒ gitExec(args: string[], cwd?: string) → string
+  ƒ isGitAvailable() → boolean
+  ƒ isGitRepo(dir: string) → boolean
+  ƒ getGitRoot(dir: string) → string | null
+  ƒ getChangedFiles(dir: string, ref: string =) → string[]
+  ƒ hashContent(content: string) → string
+  ƒ installPreCommitHook(repoDir: string) → boolean
+  ƒ uninstallPreCommitHook(repoDir: string) → boolean
+
+━━ utils/glob-matcher.ts (128L) [~1,324T]
+  ƒ globToRegex(pattern: string) → RegExp
+  ƒ matchGlob(filePath: string, pattern: string) → boolean
+  ƒ shouldIgnore(filePath: string, patterns: readonly string[]) → boolean
+  κ DEFAULT_IGNORE_PATTERNS: readonly string[]
+
+━━ utils/index.ts (28L) [~195T]
+  ↗ stripComments from ./comment-stripper.js
+  ↗ truncateType, simplifyType, cleanReturnType from ./type-truncator.js
+
+━━ utils/type-truncator.ts (26L) [~477T]
+  ƒ truncateType(type: string, maxLength?: number) → string
+  ƒ simplifyType(type: string) → string
+  ƒ cleanReturnType(raw: string) → string
+  κ DEFAULT_MAX_LENGTH
+
+━━ watcher.ts (109L) [~1,070T]
+  ƒ createFileWatcher(kernel: Kernel, config: CodemapConfig, debounceMs?: number) → CodemapWatcher
+  τ WatchChangeListener = (event: WatchEvent)=>void
+  τ WatchErrorListener = (error: Error)=>void
+
+
+## DEPENDENCY GRAPH
+  builder.ts → ./config.js, ./kernel.js, ./scanner.js, ./watcher.js
+  cli.ts → ./config.js, ./kernel.js, ./scanner.js, ./plugins/optional/git-hooks.js, ./plugins/optional/claude-md.js, ./watcher.js, ./types.js
+  config.ts → ./types.js, ./errors.js
+  index.ts → ./config.js, ./builder.js, ./kernel.js, ./scanner.js
+  kernel.ts → ./errors.js, ./scanner.js, ./token-estimator.js
+  plugins/core/typescript-parser.ts → ../../utils/comment-stripper.js, ../../utils/brace-counter.js, ../../utils/type-truncator.js, ../../token-estimator.js
+  plugins/optional/claude-md.ts → ../../types.js
+  plugins/optional/complexity.ts → ../../types.js
+  plugins/optional/csharp-parser.ts → ../../utils/comment-stripper.js, ../../utils/brace-counter.js, ../../utils/type-truncator.js, ../../token-estimator.js
+  plugins/optional/git-hooks.ts → ../../types.js, ../../utils/git.js
+  plugins/optional/go-parser.ts → ../../utils/comment-stripper.js, ../../utils/brace-counter.js, ../../utils/type-truncator.js, ../../token-estimator.js
+  plugins/optional/ignore.ts → ../../types.js, ../../scanner.js
+  plugins/optional/incremental.ts → ../../types.js, ../../utils/git.js
+  plugins/optional/java-parser.ts → ../../utils/comment-stripper.js, ../../utils/brace-counter.js, ../../utils/type-truncator.js, ../../token-estimator.js
+  plugins/optional/json-formatter.ts → ../../types.js
+  plugins/optional/monorepo.ts → ../../types.js
+  plugins/optional/php-parser.ts → ../../utils/comment-stripper.js, ../../utils/brace-counter.js, ../../utils/type-truncator.js, ../../token-estimator.js
+  plugins/optional/python-parser.ts → ../../utils/comment-stripper.js, ../../utils/type-truncator.js, ../../token-estimator.js
+  plugins/optional/rust-parser.ts → ../../utils/comment-stripper.js, ../../utils/brace-counter.js, ../../utils/type-truncator.js, ../../token-estimator.js
+  plugins/registry.ts → ../types.js, ./core/typescript-parser.js, ./core/compact-formatter.js, ./optional/go-parser.js, ./optional/python-parser.js, ./optional/rust-parser.js, ./optional/php-parser.js, ./optional/java-parser.js, ./optional/csharp-parser.js, ./optional/json-formatter.js, ./optional/markdown-formatter.js, ./optional/llms-txt-formatter.js, ./optional/complexity.js, ./optional/ignore.js, ./optional/incremental.js, ./optional/git-hooks.js, ./optional/claude-md.js, ./optional/monorepo.js
+  scanner.ts → ./utils/glob-matcher.js
+  token-estimator.ts → ./types.js
+  watcher.ts → ./kernel.js
+
+
+### Symbol Legend
+ƒ Function  ◆ Class  ◇ Interface  τ Type  ε Enum  ⚛ Component  🪝 Hook
+<!-- CODEMAP:END -->
