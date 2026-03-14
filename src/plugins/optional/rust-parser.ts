@@ -99,12 +99,14 @@ function parseRust(content: string, filePath: string): FileAnalysis {
 
     // ─── Structs ───────────────────────────────────────────
     const structMatch = trimmed.match(
-      /^(pub(?:\(crate\))?\s+)?struct\s+(\w+)(?:<[^>]*>)?\s*(?:\{|;|\()/,
+      /^(pub(?:\(crate\))?\s+)?struct\s+(\w+)(?:<([^>]*)>)?\s*(?:\{|;|\()/,
     );
     if (structMatch) {
       const derives = collectDerives(lines, i);
       const isPub = !!structMatch[1];
       const name = structMatch[2]!;
+      const genericsStr = structMatch[3];
+      const generics = genericsStr ? extractRustGenerics(genericsStr) : undefined;
 
       if (trimmed.includes('{')) {
         const endLine = findBlockEnd(lines, i);
@@ -117,6 +119,7 @@ function parseRust(content: string, filePath: string): FileAnalysis {
           methods: [],
           exported: isPub,
           derives: derives.length > 0 ? derives : undefined,
+          generics: generics && generics.length > 0 ? generics : undefined,
         });
         i = endLine;
       } else {
@@ -127,6 +130,7 @@ function parseRust(content: string, filePath: string): FileAnalysis {
           methods: [],
           exported: isPub,
           derives: derives.length > 0 ? derives : undefined,
+          generics: generics && generics.length > 0 ? generics : undefined,
         });
       }
       continue;
@@ -154,14 +158,16 @@ function parseRust(content: string, filePath: string): FileAnalysis {
 
     // ─── Traits ────────────────────────────────────────────
     const traitMatch = trimmed.match(
-      /^(pub(?:\(crate\))?\s+)?(?:unsafe\s+)?trait\s+(\w+)(?:<[^>]*>)?(?:\s*:\s*(.+?))?\s*\{/,
+      /^(pub(?:\(crate\))?\s+)?(?:unsafe\s+)?trait\s+(\w+)(?:<([^>]*)>)?(?:\s*:\s*(.+?))?\s*\{/,
     );
     if (traitMatch) {
       const endLine = findBlockEnd(lines, i);
       const bodyLines = lines.slice(i + 1, endLine);
       const methods = extractTraitMethods(bodyLines);
       const isPub = !!traitMatch[1];
-      const superTraitsStr = traitMatch[3];
+      const traitGenericsStr = traitMatch[3];
+      const traitGenerics = traitGenericsStr ? extractRustGenerics(traitGenericsStr) : undefined;
+      const superTraitsStr = traitMatch[4];
       const superTraits = superTraitsStr
         ? superTraitsStr.split('+').map((s) => s.trim()).filter(Boolean)
         : undefined;
@@ -171,6 +177,7 @@ function parseRust(content: string, filePath: string): FileAnalysis {
         methods,
         exported: isPub,
         superTraits,
+        generics: traitGenerics && traitGenerics.length > 0 ? traitGenerics : undefined,
       });
       i = endLine;
       continue;
@@ -250,6 +257,58 @@ function parseRust(content: string, filePath: string): FileAnalysis {
 }
 
 // ─── Helper Functions ─────────────────────────────────────────────
+
+/**
+ * Extract generics (lifetime params and type params) from a Rust generic block.
+ * Input is the content between angle brackets, e.g. `'a, T: Clone, U`.
+ * Returns an array like `["'a", "T", "U"]`.
+ */
+function extractRustGenerics(genericStr: string): string[] {
+  const generics: string[] = [];
+  let depth = 0;
+  let current = '';
+
+  for (const ch of genericStr) {
+    if (ch === '<' || ch === '(' || ch === '{' || ch === '[') depth++;
+    else if (ch === '>' || ch === ')' || ch === '}' || ch === ']') depth--;
+
+    if (ch === ',' && depth === 0) {
+      const param = current.trim();
+      if (param) {
+        // Lifetime: 'a or 'static
+        const lifetimeMatch = param.match(/^'(\w+)/);
+        if (lifetimeMatch) {
+          generics.push("'" + lifetimeMatch[1]!);
+        } else {
+          // Type param: T or T: Clone + Debug — take just the name
+          const typeMatch = param.match(/^(\w+)/);
+          if (typeMatch) {
+            generics.push(typeMatch[1]!);
+          }
+        }
+      }
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+
+  // Handle last segment
+  const param = current.trim();
+  if (param) {
+    const lifetimeMatch = param.match(/^'(\w+)/);
+    if (lifetimeMatch) {
+      generics.push("'" + lifetimeMatch[1]!);
+    } else {
+      const typeMatch = param.match(/^(\w+)/);
+      if (typeMatch) {
+        generics.push(typeMatch[1]!);
+      }
+    }
+  }
+
+  return generics;
+}
 
 /**
  * Parse a Rust `use` statement into import/export info.
@@ -476,15 +535,18 @@ function collectRustSignature(lines: readonly string[], startLine: number): stri
       } else if (ch === ')') {
         parenDepth--;
         if (foundOpen && parenDepth === 0) {
-          // Collect return type after closing paren
+          // Collect return type (and possible where clause) after closing paren
           const rest = line.slice(line.lastIndexOf(')') + 1);
           if (rest.includes('{') || rest.includes(';')) {
             return sig;
           }
-          // Return type may be on next line
-          if (i + 1 < lines.length) {
-            const nextLine = lines[i + 1]!.trim();
+          // Return type / where clause may span subsequent lines
+          for (let j = i + 1; j < lines.length && j < startLine + 15; j++) {
+            const nextLine = lines[j]!.trim();
             sig += ' ' + nextLine;
+            if (nextLine.includes('{') || nextLine.includes(';')) {
+              return sig;
+            }
           }
           return sig;
         }
@@ -579,7 +641,15 @@ function extractRustReturnType(signature: string): string {
   if (afterParen === -1) return '()';
 
   const rest = signature.slice(afterParen).trim();
-  const arrowMatch = rest.match(/^->\s*(.+?)(?:\s*\{|$|\s*where\b)/);
+  // First try to match return type with a where clause
+  const arrowWithWhere = rest.match(/^->\s*(.+?)\s+(where\s+.+?)(?:\s*\{|$)/);
+  if (arrowWithWhere) {
+    const retType = truncateType(simplifyType(arrowWithWhere[1]!.trim()));
+    const whereClause = arrowWithWhere[2]!.trim();
+    return `${retType} ${whereClause}`;
+  }
+  // Fall back to return type without where clause
+  const arrowMatch = rest.match(/^->\s*(.+?)(?:\s*\{|$)/);
   if (arrowMatch) {
     return truncateType(simplifyType(arrowMatch[1]!.trim()));
   }

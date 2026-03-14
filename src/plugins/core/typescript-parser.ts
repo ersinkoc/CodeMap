@@ -726,7 +726,7 @@ function extractGenerics(str: string): string[] {
   const inner = str.replace(/^</, '').replace(/>$/, '');
   return inner
     .split(',')
-    .map((g) => g.trim().split(/\s+/)[0]!)
+    .map((g) => g.trim())
     .filter(Boolean);
 }
 

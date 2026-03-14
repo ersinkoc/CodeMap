@@ -20,6 +20,10 @@ export { createRustParserPlugin } from './optional/rust-parser.js';
 export { createPhpParserPlugin } from './optional/php-parser.js';
 export { createJavaParserPlugin } from './optional/java-parser.js';
 export { createCsharpParserPlugin } from './optional/csharp-parser.js';
+export { createKotlinParserPlugin } from './optional/kotlin-parser.js';
+export { createSwiftParserPlugin } from './optional/swift-parser.js';
+export { createRubyParserPlugin } from './optional/ruby-parser.js';
+export { createDartParserPlugin } from './optional/dart-parser.js';
 
 // Optional formatters
 export { createJsonFormatterPlugin } from './optional/json-formatter.js';

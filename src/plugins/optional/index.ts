@@ -19,3 +19,7 @@ export { createGitHooksPlugin, installHook, uninstallHook } from './git-hooks.js
 export { createClaudeMdPlugin, injectIntoClaudeMd } from './claude-md.js';
 export { createMonorepoPlugin, detectWorkspaces } from './monorepo.js';
 export { createCodeAnalysisPlugin, analyzeCode } from './code-analysis.js';
+export { createKotlinParserPlugin } from './kotlin-parser.js';
+export { createSwiftParserPlugin } from './swift-parser.js';
+export { createRubyParserPlugin } from './ruby-parser.js';
+export { createDartParserPlugin } from './dart-parser.js';

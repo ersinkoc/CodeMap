@@ -154,7 +154,7 @@ describe('C# Parser Plugin', () => {
 
     const age = props.find((p: any) => p.name === 'Age');
     expect(age).toBeDefined();
-    expect(age.readonly).toBe(false); // has init
+    expect(age.readonly).toBe(true); // init-only is effectively readonly
 
     const id = props.find((p: any) => p.name === 'Id');
     expect(id).toBeDefined();
@@ -627,5 +627,46 @@ public class MyEntity {
     const newMethod = iface.methods.find((m: any) => m.name === 'NewMethod');
     expect(newMethod).toBeDefined();
     expect(newMethod.decorators).toBeUndefined();
+  });
+
+  it('should parse primary constructor parameters as properties', () => {
+    const code = `public class Person(string Name, int Age) {
+    public string Greeting => $"Hi {Name}";
+}`;
+    const result = parser.parse(code, 'Person.cs');
+    const cls = result.classes.find((c: any) => c.name === 'Person');
+    expect(cls).toBeDefined();
+    const nameProp = cls.properties.find((p: any) => p.name === 'Name');
+    expect(nameProp).toBeDefined();
+    expect(nameProp.type).toBe('string');
+    expect(nameProp.readonly).toBe(true);
+    const ageProp = cls.properties.find((p: any) => p.name === 'Age');
+    expect(ageProp).toBeDefined();
+    expect(ageProp.type).toBe('int');
+    expect(ageProp.readonly).toBe(true);
+  });
+
+  it('should mark init-only property as readonly', () => {
+    const code = `public class Config {
+    public string Name { get; init; }
+}`;
+    const result = parser.parse(code, 'Config.cs');
+    const cls = result.classes.find((c: any) => c.name === 'Config');
+    expect(cls).toBeDefined();
+    const nameProp = cls.properties.find((p: any) => p.name === 'Name');
+    expect(nameProp).toBeDefined();
+    expect(nameProp.readonly).toBe(true);
+  });
+
+  it('should mark regular settable property as not readonly', () => {
+    const code = `public class Foo {
+    public int Count { get; set; }
+}`;
+    const result = parser.parse(code, 'Foo.cs');
+    const cls = result.classes.find((c: any) => c.name === 'Foo');
+    expect(cls).toBeDefined();
+    const countProp = cls.properties.find((p: any) => p.name === 'Count');
+    expect(countProp).toBeDefined();
+    expect(countProp.readonly).toBe(false);
   });
 });

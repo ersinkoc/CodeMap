@@ -22,4 +22,9 @@ export const EXTENSION_LANGUAGE_MAP: Readonly<Record<string, LanguageId>> = {
   '.php': 'php',
   '.java': 'java',
   '.cs': 'csharp',
+  '.kt': 'kotlin',
+  '.kts': 'kotlin',
+  '.swift': 'swift',
+  '.rb': 'ruby',
+  '.dart': 'dart',
 };

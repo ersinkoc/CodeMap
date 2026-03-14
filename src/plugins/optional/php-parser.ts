@@ -178,12 +178,19 @@ function parsePhp(content: string, filePath: string): FileAnalysis {
       const methods = extractPhpClassMethods(bodyLines);
       const properties = extractPhpProperties(classBody);
 
+      // Constructor property promotion: extract promoted properties from __construct params
+      const promotedProps = extractPromotedProperties(bodyLines);
+      // Merge promoted properties, avoiding duplicates by name
+      const existingNames = new Set(properties.map((p) => p.name));
+      const uniquePromoted = promotedProps.filter((p) => !existingNames.has(p.name));
+      const allProperties = [...properties, ...uniquePromoted];
+
       classes.push({
         name: classMatch[3]!,
         extends: classMatch[4],
         implements: implementsArr,
         methods,
-        properties,
+        properties: allProperties,
         exported: true,
         abstract: !!classMatch[1],
         loc: endLine - i + 1,
@@ -323,8 +330,9 @@ function extractPhpProperties(body: string): PropertyInfo[] {
     const trimmed = line.trim();
 
     // Match: public string $name; or protected static int $count = 0;
+    // Supports union types (int|string), intersection types (Foo&Bar), and nullable types (?Type)
     const propMatch = trimmed.match(
-      /^(public|protected|private)\s+(static\s+)?(readonly\s+)?(?:(\?\s*\w+|\w+)\s+)?\$(\w+)/,
+      /^(public|protected|private)\s+(static\s+)?(readonly\s+)?(?:(\?\s*[\w\\|&]+|[\w\\|&]+)\s+)?\$(\w+)/,
     );
     if (propMatch && !trimmed.includes('function')) {
       const typeStr = propMatch[4];
@@ -334,6 +342,71 @@ function extractPhpProperties(body: string): PropertyInfo[] {
         scope: propMatch[1] as PropertyInfo['scope'],
         static: !!propMatch[2],
         readonly: !!propMatch[3],
+      });
+    }
+  }
+
+  return props;
+}
+
+/**
+ * Extract promoted properties from a PHP constructor.
+ * Scans class body for __construct method and looks for parameters with visibility modifiers.
+ */
+function extractPromotedProperties(bodyLines: readonly string[]): PropertyInfo[] {
+  const props: PropertyInfo[] = [];
+
+  // Find __construct method
+  let ctorStart = -1;
+  for (let i = 0; i < bodyLines.length; i++) {
+    const trimmed = bodyLines[i]!.trim();
+    if (/function\s+__construct\s*\(/.test(trimmed)) {
+      ctorStart = i;
+      break;
+    }
+  }
+
+  if (ctorStart === -1) return props;
+
+  // Collect the full constructor signature
+  const sig = collectPhpSignature(bodyLines as string[], ctorStart);
+
+  // Extract the parameter list from the signature
+  const parenMatch = sig.match(/\(([^)]*)\)/);
+  if (!parenMatch || !parenMatch[1]?.trim()) return props;
+
+  const paramsStr = parenMatch[1];
+  let depth = 0;
+  let current = '';
+
+  const rawParams: string[] = [];
+  for (const ch of paramsStr) {
+    if (ch === '<' || ch === '(' || ch === '{' || ch === '[') depth++;
+    else if (ch === '>' || ch === ')' || ch === '}' || ch === ']') depth--;
+
+    if (ch === ',' && depth === 0) {
+      rawParams.push(current.trim());
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  if (current.trim()) rawParams.push(current.trim());
+
+  // Check each param for visibility modifier (promoted property)
+  for (const raw of rawParams) {
+    const promotedMatch = raw.match(
+      /^(public|protected|private)\s+(?:(readonly)\s+)?(?:(\??\s*[\w\\|&]+)\s+)?\$(\w+)/,
+    );
+    if (promotedMatch) {
+      const visibility = promotedMatch[1] as PropertyInfo['scope'];
+      const isReadonly = !!promotedMatch[2];
+      const typeStr = promotedMatch[3];
+      props.push({
+        name: '$' + promotedMatch[4]!,
+        type: typeStr ? truncateType(simplifyType(typeStr)) : 'mixed',
+        scope: visibility,
+        readonly: isReadonly || undefined,
       });
     }
   }
@@ -418,8 +491,9 @@ function parseOnePhpParam(raw: string): ParamInfo | null {
   if (!raw) return null;
 
   // Match: [?Type] [$name|...$name] [= default]
+  // Supports union types (int|string) and intersection types (Foo&Bar)
   const match = raw.match(
-    /^(?:(public|protected|private)\s+)?(?:(readonly)\s+)?(?:(\??\s*[\w\\|]+)\s+)?(\.\.\.)?\$(\w+)(?:\s*=\s*(.+))?$/,
+    /^(?:(public|protected|private)\s+)?(?:(readonly)\s+)?(?:(\??\s*[\w\\|&]+)\s+)?(\.\.\.)?\$(\w+)(?:\s*=\s*(.+))?$/,
   );
   if (match) {
     const typeStr = match[3];
@@ -460,7 +534,8 @@ function extractPhpReturnType(signature: string): string {
 
   const rest = signature.slice(afterParen).trim();
   // Match `: ReturnType` before `{` or `;`
-  const colonMatch = rest.match(/^:\s*(\??\s*[\w\\|]+)(?:\s*\{|\s*;|$)/);
+  // Supports union types (int|string), intersection types (Foo&Bar), and nullable types (?Type)
+  const colonMatch = rest.match(/^:\s*(\??\s*[\w\\|&]+)(?:\s*\{|\s*;|$)/);
   if (colonMatch) {
     return truncateType(simplifyType(colonMatch[1]!.trim()));
   }

@@ -295,16 +295,19 @@ function extractClassProperties(
 
     const indent = getIndent(line);
 
-    // Class-level type annotations: name: Type
+    // Class-level type annotations: name: Type or name: Type = value / field(...)
     if (indent === bodyIndent) {
-      const annotationMatch = trimmed.match(/^(\w+)\s*:\s*(.+?)(?:\s*=.*)?$/);
+      const annotationMatch = trimmed.match(/^(\w+)\s*:\s*(.+?)(?:\s*=\s*(.+))?$/);
       if (annotationMatch && !trimmed.startsWith('def ') && !trimmed.startsWith('class ')) {
         const name = annotationMatch[1]!;
+        const defaultPart = annotationMatch[3];
+        const hasDefault = !!defaultPart;
         if (!seen.has(name)) {
           seen.add(name);
           properties.push({
             name,
             type: truncateType(simplifyType(annotationMatch[2]!)),
+            optional: hasDefault || undefined,
           });
         }
       }
@@ -339,6 +342,9 @@ function parsePython(content: string, filePath: string): FileAnalysis {
   const functions: FunctionInfo[] = [];
   const classes: ClassInfo[] = [];
   const imports: ImportInfo[] = [];
+
+  // Track class ranges so we can exclude nested functions inside class bodies
+  const classRanges: { start: number; end: number }[] = [];
 
   // Use original content for __all__ detection because the comment stripper
   // removes string literals, which are the names in __all__.
@@ -449,35 +455,40 @@ function parsePython(content: string, filePath: string): FileAnalysis {
         loc: endLine - i + 1,
       });
 
+      classRanges.push({ start: i, end: endLine });
       i = endLine;
       continue;
     }
 
-    // ─── Functions (top-level only, indent === 0) ─────────
+    // ─── Functions (any indent, but not inside a class body) ─────────
     const funcMatch = trimmed.match(
       /^(async\s+)?def\s+(\w+)\s*\(([^)]*)\)\s*(?:->\s*(.+?))?\s*:/,
     );
-    if (funcMatch && indent === 0) {
-      const name = funcMatch[2]!;
-      const paramsStr = funcMatch[3] ?? '';
-      const returnType = funcMatch[4]
-        ? truncateType(simplifyType(funcMatch[4].trim()))
-        : 'void';
-      const endLine = findIndentBlockEnd(lines, i, indent);
-      const decorators = collectDecorators(lines, i);
+    if (funcMatch) {
+      // Check if this line is inside a class body
+      const insideClass = classRanges.some((r) => i > r.start && i <= r.end);
+      if (!insideClass) {
+        const name = funcMatch[2]!;
+        const paramsStr = funcMatch[3] ?? '';
+        const returnType = funcMatch[4]
+          ? truncateType(simplifyType(funcMatch[4].trim()))
+          : 'void';
+        const endLine = findIndentBlockEnd(lines, i, indent);
+        const decorators = collectDecorators(lines, i);
 
-      functions.push({
-        name,
-        params: parsePythonParams(paramsStr),
-        returnType,
-        exported: isPythonExported(name, allList),
-        async: !!funcMatch[1],
-        loc: endLine - i + 1,
-        decorators: decorators.length > 0 ? decorators : undefined,
-      });
+        functions.push({
+          name,
+          params: parsePythonParams(paramsStr),
+          returnType,
+          exported: indent === 0 ? isPythonExported(name, allList) : false,
+          async: !!funcMatch[1],
+          loc: endLine - i + 1,
+          decorators: decorators.length > 0 ? decorators : undefined,
+        });
 
-      i = endLine;
-      continue;
+        i = endLine;
+        continue;
+      }
     }
   }
 

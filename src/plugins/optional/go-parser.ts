@@ -12,6 +12,7 @@ import type {
   FunctionInfo,
   InterfaceInfo,
   ImportInfo,
+  ConstantInfo,
   ParamInfo,
   PropertyInfo,
   StructInfo,
@@ -212,6 +213,7 @@ function parseGo(content: string, filePath: string): FileAnalysis {
   const interfaces: InterfaceInfo[] = [];
   const structs: StructInfo[] = [];
   const imports: ImportInfo[] = [];
+  const constants: ConstantInfo[] = [];
   const packages: PackageInfo[] = [];
 
   // Track methods by receiver type to attach to structs later
@@ -287,8 +289,42 @@ function parseGo(content: string, filePath: string): FileAnalysis {
       continue;
     }
 
+    // ─── Single const ────────────────────────────────────
+    const singleConstMatch = trimmed.match(/^const\s+(\w+)(?:\s+\w+)?\s*=/);
+    if (singleConstMatch) {
+      constants.push({
+        name: singleConstMatch[1]!,
+        type: 'unknown',
+        exported: isExported(singleConstMatch[1]!),
+      });
+      continue;
+    }
+
+    // ─── Grouped const block ───────────────────────────────
+    const groupConstMatch = trimmed.match(/^const\s*\(/);
+    if (groupConstMatch) {
+      let j = i + 1;
+      while (j < lines.length) {
+        const constLine = lines[j]!.trim();
+        if (constLine === ')') break;
+
+        const constEntryMatch = constLine.match(/^(\w+)(?:\s+\w+)?\s*=/);
+        if (constEntryMatch) {
+          constants.push({
+            name: constEntryMatch[1]!,
+            type: 'unknown',
+            exported: isExported(constEntryMatch[1]!),
+          });
+        }
+
+        j++;
+      }
+      i = j;
+      continue;
+    }
+
     // ─── Struct type ──────────────────────────────────────
-    const structMatch = trimmed.match(/^type\s+(\w+)\s+struct\s*\{/);
+    const structMatch = trimmed.match(/^type\s+(\w+)(?:\[.*?\])?\s+struct\s*\{/);
     if (structMatch) {
       const name = structMatch[1]!;
       const endLine = findBlockEnd(lines, i);
@@ -308,7 +344,7 @@ function parseGo(content: string, filePath: string): FileAnalysis {
     }
 
     // ─── Interface type ───────────────────────────────────
-    const ifaceMatch = trimmed.match(/^type\s+(\w+)\s+interface\s*\{/);
+    const ifaceMatch = trimmed.match(/^type\s+(\w+)(?:\[.*?\])?\s+interface\s*\{/);
     if (ifaceMatch) {
       const name = ifaceMatch[1]!;
       const endLine = findBlockEnd(lines, i);
@@ -356,7 +392,7 @@ function parseGo(content: string, filePath: string): FileAnalysis {
 
     // ─── Functions ────────────────────────────────────────
     const funcMatch = trimmed.match(
-      /^func\s+(\w+)\s*\(([^)]*)\)\s*(.*)/,
+      /^func\s+(\w+)(?:\[.*?\])?\s*\(([^)]*)\)\s*(.*)/,
     );
     if (funcMatch) {
       const name = funcMatch[1]!;
@@ -411,7 +447,7 @@ function parseGo(content: string, filePath: string): FileAnalysis {
     interfaces,
     types: [],
     enums: [],
-    constants: [],
+    constants,
     structs: structs.length > 0 ? structs : undefined,
     packages: packages.length > 0 ? packages : undefined,
   };

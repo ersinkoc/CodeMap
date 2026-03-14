@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.2.0 (2026-03-14)
+
+### New Languages
+
+- **Kotlin** — `data class`, `sealed class`, `object`, `companion object`, `suspend fun`, extension functions, `typealias`, annotations
+- **Swift** — `struct`, `class`, `enum`, `protocol`, `extension`, `func`/`init`/`deinit`, `let`/`var`, `@attribute`
+- **Ruby** — `class`, `module`, `def`, `attr_accessor`/`attr_reader`/`attr_writer`, `require`/`include`/`extend`, visibility tracking
+- **Dart** — `class` (abstract/sealed/base), `mixin`, `extension`, `enum`, `typedef`, async functions, factory/named constructors, annotations
+
+### Parser Improvements (all 7 existing languages)
+
+- **TypeScript** — Generic constraints preserved (`<T extends Base>` → `['T extends Base']`)
+- **Go** — Go 1.18+ generics (`func Map[T any]`, `type Set[T comparable] struct{}`), `const` block extraction
+- **Python** — Dataclass field defaults (`= field(default_factory=list)` → `optional: true`)
+- **Rust** — Lifetime generics (`<'a, T>` extracted), `where` clause in return type, char literal vs lifetime fix in comment stripper
+- **PHP** — Union types (`int|string`), intersection types (`Foo&Bar`), constructor property promotion
+- **Java** — Sealed classes/interfaces with `permits` clause, generic bounds extraction for interfaces
+- **C#** — Primary constructors (`class Person(string Name, int Age)`), init-only → `readonly: true`
+
+### Infrastructure
+
+- Added `StructInfo.generics` and `TraitInfo.generics` fields to type system
+- Ruby comment stripping (`#` + `=begin...=end`) added to comment-stripper
+- Extension map expanded: `.kt`, `.kts`, `.swift`, `.rb`, `.dart`
+- Token estimation ratios added for 4 new languages
+
 ## 0.1.0 (2026-03-14)
 
 ### New Features

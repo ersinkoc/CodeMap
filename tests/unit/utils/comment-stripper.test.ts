@@ -126,6 +126,51 @@ const y = 2;`;
     });
   });
 
+  describe('Ruby', () => {
+    it('should strip # single-line comments', () => {
+      const result = stripComments('x = 1 # comment', 'ruby');
+      expect(result).toContain('x = 1');
+      expect(result).not.toContain('comment');
+    });
+
+    it('should strip =begin...=end block comments', () => {
+      const input = `code_before
+=begin
+this is a block comment
+spanning multiple lines
+=end
+code_after`;
+      const result = stripComments(input, 'ruby');
+      expect(result).toContain('code_before');
+      expect(result).toContain('code_after');
+      expect(result).not.toContain('block comment');
+    });
+
+    it('should strip double-quoted strings', () => {
+      const result = stripComments('x = "hello world"', 'ruby');
+      expect(result).toContain('x =');
+      expect(result).not.toContain('hello world');
+    });
+
+    it('should strip single-quoted strings', () => {
+      const result = stripComments("x = 'hello world'", 'ruby');
+      expect(result).toContain('x =');
+      expect(result).not.toContain('hello world');
+    });
+
+    it('should handle escaped characters in double-quoted Ruby strings', () => {
+      const result = stripComments('x = "say \\"hi\\""', 'ruby');
+      expect(result).toContain('x =');
+      expect(result).not.toContain('hi');
+    });
+
+    it('should handle escaped characters in single-quoted Ruby strings', () => {
+      const result = stripComments("x = 'it\\'s'", 'ruby');
+      expect(result).toContain('x =');
+      expect(result).not.toContain("it\\'s");
+    });
+  });
+
   describe('Rust', () => {
     it('should strip line comments', () => {
       const result = stripComments('let x = 1; // comment', 'rust');
@@ -135,6 +180,18 @@ const y = 2;`;
     it('should strip block comments', () => {
       const result = stripComments('let x = /* val */ 1;', 'rust');
       expect(result).toContain('let x =');
+    });
+
+    it('should strip char literals like \'x\'', () => {
+      const result = stripComments("let c = 'x';", 'rust');
+      expect(result).toContain('let c =');
+      // The char literal content should be replaced with spaces
+      expect(result).not.toContain("'x'");
+    });
+
+    it('should preserve lifetime params like \'a', () => {
+      const result = stripComments("fn foo<'a>(x: &'a str) {}", 'rust');
+      expect(result).toContain("'a");
     });
 
     it('should strip r"..." raw strings', () => {
@@ -237,6 +294,63 @@ const y = 2;`;
       const result = stripComments('x = "escaped \\"quote\\""', 'python');
       expect(result).toContain('x =');
       expect(result).not.toContain('escaped');
+    });
+  });
+
+  describe('Ruby', () => {
+    it('should strip # comments', () => {
+      const result = stripComments('x = 1 # comment', 'ruby');
+      expect(result).toContain('x = 1');
+      expect(result).not.toContain('comment');
+    });
+
+    it('should strip =begin...=end block comments', () => {
+      const result = stripComments('x = 1\n=begin\nblock comment\n=end\ny = 2', 'ruby');
+      expect(result).toContain('x = 1');
+      expect(result).toContain('y = 2');
+      expect(result).not.toContain('block comment');
+    });
+
+    it('should strip double-quoted strings', () => {
+      const result = stripComments('x = "hello"', 'ruby');
+      expect(result).toContain('x =');
+      expect(result).not.toContain('hello');
+    });
+
+    it('should strip single-quoted strings', () => {
+      const result = stripComments("x = 'hello'", 'ruby');
+      expect(result).toContain('x =');
+      expect(result).not.toContain('hello');
+    });
+
+    it('should handle escaped chars in strings', () => {
+      const result = stripComments('x = "escaped \\"quote"', 'ruby');
+      expect(result).toContain('x =');
+      expect(result).not.toContain('escaped');
+    });
+
+    it('should handle escaped chars in single-quoted strings', () => {
+      const result = stripComments("x = 'escaped \\'quote'", 'ruby');
+      expect(result).toContain('x =');
+    });
+  });
+
+  describe('Rust', () => {
+    it('should preserve lifetime parameters', () => {
+      const result = stripComments("struct Foo<'a> { x: &'a str }", 'rust');
+      expect(result).toContain("'a");
+      expect(result).toContain('Foo');
+    });
+
+    it('should strip char literals', () => {
+      const result = stripComments("let c = 'x';", 'rust');
+      expect(result).toContain('let c =');
+      expect(result).not.toContain("'x'");
+    });
+
+    it('should strip escaped char literals', () => {
+      const result = stripComments("let c = '\\n';", 'rust');
+      expect(result).toContain('let c =');
     });
   });
 });

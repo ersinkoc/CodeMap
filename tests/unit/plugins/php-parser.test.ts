@@ -424,6 +424,59 @@ class Broken {
     expect(cls.methods.length).toBeGreaterThanOrEqual(1);
   });
 
+  it('should parse union type property', () => {
+    const code = `<?php
+class Foo {
+    public int|string $id;
+}`;
+    const result = parser.parse(code, 'Foo.php');
+    const cls = result.classes.find((c: any) => c.name === 'Foo');
+    expect(cls).toBeDefined();
+    expect(cls.properties.length).toBe(1);
+    expect(cls.properties[0].name).toBe('$id');
+    expect(cls.properties[0].type).toBe('int|string');
+  });
+
+  it('should extract promoted properties from constructor', () => {
+    const code = `<?php
+class User {
+    public function __construct(
+        private string $name,
+        protected int $age = 0
+    ) {}
+}`;
+    const result = parser.parse(code, 'User.php');
+    const cls = result.classes.find((c: any) => c.name === 'User');
+    expect(cls).toBeDefined();
+    // Promoted properties should appear in properties array
+    const nameProp = cls.properties.find((p: any) => p.name === '$name');
+    expect(nameProp).toBeDefined();
+    expect(nameProp.scope).toBe('private');
+    expect(nameProp.type).toBe('string');
+    const ageProp = cls.properties.find((p: any) => p.name === '$age');
+    expect(ageProp).toBeDefined();
+    expect(ageProp.scope).toBe('protected');
+    expect(ageProp.type).toBe('int');
+  });
+
+  it('should parse intersection type param', () => {
+    const code = `<?php
+function process(Foo&Bar $item): void {}`;
+    const result = parser.parse(code, 'process.php');
+    expect(result.functions.length).toBe(1);
+    expect(result.functions[0].params.length).toBe(1);
+    expect(result.functions[0].params[0].name).toBe('$item');
+    expect(result.functions[0].params[0].type).toBe('Foo&Bar');
+  });
+
+  it('should parse union return type', () => {
+    const code = `<?php
+function getId(): int|string { return 1; }`;
+    const result = parser.parse(code, 'getId.php');
+    expect(result.functions.length).toBe(1);
+    expect(result.functions[0].returnType).toBe('int|string');
+  });
+
   it('should handle parseOnePhpParam returning null for unrecognized format', () => {
     // A param that does not match the PHP param regex (no $) is skipped
     const code = `<?php

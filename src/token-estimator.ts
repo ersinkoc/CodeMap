@@ -18,6 +18,10 @@ const CHARS_PER_TOKEN: Record<string, number> = {
   php: 3.5,
   java: 3.3,
   csharp: 3.3,
+  kotlin: 3.3,
+  swift: 3.5,
+  ruby: 4.0,
+  dart: 3.3,
   default: 3.5,
 };
 

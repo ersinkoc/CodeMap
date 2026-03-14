@@ -30,6 +30,10 @@ const VALID_LANGUAGES = new Set<string>([
   'php',
   'java',
   'csharp',
+  'kotlin',
+  'swift',
+  'ruby',
+  'dart',
 ]);
 
 /**

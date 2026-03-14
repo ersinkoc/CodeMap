@@ -519,4 +519,56 @@ public class Foo {
     expect(cls).toBeDefined();
     // The "int x = 42;" line should not cause issues
   });
+
+  it('should parse sealed class with permits clause', () => {
+    const code = `public sealed class Shape permits Circle, Square {
+}`;
+    const result = parser.parse(code, 'Shape.java');
+    const cls = result.classes.find((c: any) => c.name === 'Shape');
+    expect(cls).toBeDefined();
+    expect(cls.exported).toBe(true);
+    // permits types are merged into implements
+    expect(cls.implements).toBeDefined();
+    expect(cls.implements).toContain('Circle');
+    expect(cls.implements).toContain('Square');
+  });
+
+  it('should parse generic interface with bounds', () => {
+    const code = `public interface Comparable<T extends Number> {
+  int compareTo(T o);
+}`;
+    const result = parser.parse(code, 'Comparable.java');
+    const iface = result.interfaces.find((i: any) => i.name === 'Comparable');
+    expect(iface).toBeDefined();
+    expect(iface.generics).toBeDefined();
+    expect(iface.generics.length).toBe(1);
+    expect(iface.generics[0]).toContain('extends');
+    expect(iface.generics[0]).toContain('Number');
+  });
+
+  it('should parse sealed interface with permits clause', () => {
+    const code = `public sealed interface Animal permits Dog, Cat {
+}`;
+    const result = parser.parse(code, 'Animal.java');
+    const iface = result.interfaces.find((i: any) => i.name === 'Animal');
+    expect(iface).toBeDefined();
+    expect(iface.exported).toBe(true);
+    // permits types are merged into extends
+    expect(iface.extends).toBeDefined();
+    expect(iface.extends).toContain('Dog');
+    expect(iface.extends).toContain('Cat');
+  });
+
+  it('should parse generic interface with multiple type params', () => {
+    const code = `public interface Mapper<T extends Number, U> {
+  U map(T input);
+}`;
+    const result = parser.parse(code, 'Mapper.java');
+    const iface = result.interfaces.find((i: any) => i.name === 'Mapper');
+    expect(iface).toBeDefined();
+    expect(iface!.generics).toBeDefined();
+    expect(iface!.generics!.length).toBe(2);
+    expect(iface!.generics![0]).toContain('T extends Number');
+    expect(iface!.generics![1]).toBe('U');
+  });
 });

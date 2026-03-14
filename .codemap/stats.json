@@ -1,10 +1,10 @@
 {
-  "fileCount": 39,
-  "totalLoc": 6872,
-  "totalTokens": 73694,
+  "fileCount": 43,
+  "totalLoc": 9245,
+  "totalTokens": 101056,
   "languageBreakdown": {
-    "typescript": 39
+    "typescript": 43
   },
-  "scanDurationMs": 35,
+  "scanDurationMs": 24,
   "incremental": false
 }

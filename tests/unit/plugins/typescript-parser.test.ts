@@ -698,4 +698,37 @@ export function run(): void { }`;
     expect(result.imports[0]!.names).toContain('B');
     expect(result.imports[0]!.from).toBe('./module.js');
   });
+
+  it('should extract interface with constrained generic', () => {
+    const code = `interface Repo<T extends Entity> {
+  find(): T;
+}`;
+    const result = parser.parse(code, 'test.ts');
+
+    expect(result.interfaces).toHaveLength(1);
+    const iface = result.interfaces[0]!;
+    expect(iface.name).toBe('Repo');
+    expect(iface.generics).toBeDefined();
+    expect(iface.generics).toContain('T extends Entity');
+  });
+
+  it('should extract function with constrained generic', () => {
+    const code = `export function merge<T extends object>(a: T, b: T): T {}`;
+    const result = parser.parse(code, 'test.ts');
+
+    expect(result.functions).toHaveLength(1);
+    expect(result.functions[0]!.name).toBe('merge');
+    // The generic constraint should be preserved via extractGenerics
+  });
+
+  it('should extract type alias with multiple constrained generics', () => {
+    const code = `export type Mapper<K extends string, V = unknown> = Record<K, V>;`;
+    const result = parser.parse(code, 'test.ts');
+
+    expect(result.types).toHaveLength(1);
+    expect(result.types[0]!.name).toBe('Mapper');
+    expect(result.types[0]!.generics).toBeDefined();
+    expect(result.types[0]!.generics).toContain('K extends string');
+    expect(result.types[0]!.generics).toContain('V = unknown');
+  });
 });

@@ -23,6 +23,9 @@ export function stripComments(content: string, language: string): string {
   if (language === 'python') {
     return stripPythonComments(content);
   }
+  if (language === 'ruby') {
+    return stripRubyComments(content);
+  }
 
   let result = '';
   let i = 0;
@@ -127,8 +130,26 @@ export function stripComments(content: string, language: string): string {
       continue;
     }
 
-    // Single-quoted string
+    // Single-quoted string (but not Rust lifetime params like 'a)
     if (ch === "'") {
+      // In Rust, 'a is a lifetime, not a string. Only treat 'X' (char literal) as string.
+      if (language === 'rust') {
+        // Rust char literal: 'x' or '\n' (exactly one char or escape + char between quotes)
+        if (i + 2 < len && content[i + 1] === '\\' && i + 3 < len && content[i + 3] === "'") {
+          result += '    ';
+          i += 4;
+          continue;
+        }
+        if (i + 2 < len && content[i + 2] === "'") {
+          result += '   ';
+          i += 3;
+          continue;
+        }
+        // Otherwise it's a lifetime — keep it
+        result += ch;
+        i++;
+        continue;
+      }
       result += ' ';
       i++;
       while (i < len && content[i] !== "'") {
@@ -275,6 +296,101 @@ function stripPythonComments(content: string): string {
         i++;
       }
       if (i < len && content[i] === quote) {
+        result += ' ';
+        i++;
+      }
+      continue;
+    }
+
+    result += ch;
+    i++;
+  }
+
+  return result;
+}
+
+/**
+ * Strip Ruby comments and string literals.
+ * Handles # comments, =begin...=end block comments, and regular strings.
+ */
+function stripRubyComments(content: string): string {
+  let result = '';
+  let i = 0;
+  const len = content.length;
+
+  while (i < len) {
+    const ch = content[i]!;
+
+    // =begin...=end block comment (must be at start of line)
+    if (
+      ch === '=' &&
+      (i === 0 || content[i - 1] === '\n') &&
+      content.slice(i, i + 6) === '=begin'
+    ) {
+      while (i < len) {
+        if (content[i] === '\n') {
+          result += '\n';
+          i++;
+          if (content.slice(i, i + 4) === '=end') {
+            while (i < len && content[i] !== '\n') {
+              result += ' ';
+              i++;
+            }
+            break;
+          }
+        } else {
+          result += ' ';
+          i++;
+        }
+      }
+      continue;
+    }
+
+    // # comment
+    if (ch === '#') {
+      while (i < len && content[i] !== '\n') {
+        result += ' ';
+        i++;
+      }
+      continue;
+    }
+
+    // Double-quoted string
+    if (ch === '"') {
+      result += ' ';
+      i++;
+      while (i < len && content[i] !== '"') {
+        if (content[i] === '\\') {
+          result += '  ';
+          i += 2;
+          continue;
+        }
+        if (content[i] === '\n') break;
+        result += ' ';
+        i++;
+      }
+      if (i < len && content[i] === '"') {
+        result += ' ';
+        i++;
+      }
+      continue;
+    }
+
+    // Single-quoted string
+    if (ch === "'") {
+      result += ' ';
+      i++;
+      while (i < len && content[i] !== "'") {
+        if (content[i] === '\\') {
+          result += '  ';
+          i += 2;
+          continue;
+        }
+        if (content[i] === '\n') break;
+        result += ' ';
+        i++;
+      }
+      if (i < len && content[i] === "'") {
         result += ' ';
         i++;
       }

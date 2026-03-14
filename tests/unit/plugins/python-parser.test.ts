@@ -417,4 +417,77 @@ def func():
     expect(method.name).toBe('process');
     expect(method.returnType).toBe('void');
   });
+
+  it('should extract dataclass with typed fields and mark defaults as optional', () => {
+    const code = `@dataclass
+class User:
+    name: str
+    age: int = 0`;
+    const result = parser.parse(code, 'test.py');
+
+    expect(result.classes).toHaveLength(1);
+    const cls = result.classes[0]!;
+    expect(cls.name).toBe('User');
+    expect(cls.decorators).toContain('dataclass');
+    expect(cls.properties).toHaveLength(2);
+
+    const nameProp = cls.properties.find((p: any) => p.name === 'name');
+    expect(nameProp).toBeDefined();
+    expect(nameProp!.type).toBe('str');
+    expect(nameProp!.optional).toBeFalsy();
+
+    const ageProp = cls.properties.find((p: any) => p.name === 'age');
+    expect(ageProp).toBeDefined();
+    expect(ageProp!.type).toBe('int');
+    expect(ageProp!.optional).toBe(true);
+  });
+
+  it('should extract dataclass with field() defaults as optional', () => {
+    const code = `@dataclass
+class Config:
+    items: list = field(default_factory=list)`;
+    const result = parser.parse(code, 'test.py');
+
+    expect(result.classes).toHaveLength(1);
+    const cls = result.classes[0]!;
+    expect(cls.name).toBe('Config');
+    expect(cls.properties).toHaveLength(1);
+
+    const itemsProp = cls.properties.find((p: any) => p.name === 'items');
+    expect(itemsProp).toBeDefined();
+    expect(itemsProp!.type).toBe('list');
+    expect(itemsProp!.optional).toBe(true);
+  });
+
+  it('should extract top-level functions at different indent levels', () => {
+    const code = `def first():
+    pass
+
+def second():
+    pass`;
+    const result = parser.parse(code, 'test.py');
+
+    expect(result.functions).toHaveLength(2);
+    expect(result.functions[0]!.name).toBe('first');
+    expect(result.functions[1]!.name).toBe('second');
+  });
+
+  it('should not capture class methods as top-level functions', () => {
+    const code = `def standalone():
+    pass
+
+class MyClass:
+    def method(self):
+        pass`;
+    const result = parser.parse(code, 'test.py');
+
+    const funcNames = result.functions.map((f: any) => f.name);
+    expect(funcNames).toContain('standalone');
+    expect(funcNames).not.toContain('method');
+
+    // method should be a class method
+    expect(result.classes).toHaveLength(1);
+    expect(result.classes[0]!.methods).toHaveLength(1);
+    expect(result.classes[0]!.methods[0]!.name).toBe('method');
+  });
 });

@@ -131,12 +131,12 @@ function parseJava(content: string, filePath: string): FileAnalysis {
 
     // ─── Interfaces ───────────────────────────────────────
     const ifaceMatch = trimmed.match(
-      /^(public\s+|protected\s+|private\s+)?(static\s+)?interface\s+(\w+)(?:<[^>]*>)?(?:\s+extends\s+(.+?))?\s*\{/,
+      /^(public\s+|protected\s+|private\s+)?(static\s+)?(sealed\s+)?interface\s+(\w+)(?:<([^>]*)>)?(?:\s+extends\s+(.+?))?(?:\s+permits\s+(.+?))?\s*\{/,
     );
     if (ifaceMatch) {
       const endLine = findBlockEnd(lines, i);
       const bodyLines = lines.slice(i + 1, endLine);
-      const extendsStr = ifaceMatch[4];
+      const extendsStr = ifaceMatch[6];
       const extendsArr = extendsStr
         ? extendsStr.split(',').map((s) => s.trim()).filter(Boolean)
         : undefined;
@@ -144,12 +144,28 @@ function parseJava(content: string, filePath: string): FileAnalysis {
       const decorators = pendingAnnotations.length > 0 ? [...pendingAnnotations] : undefined;
       pendingAnnotations = [];
 
+      // Capture permits clause into implements-like relationship
+      const permitsStr = ifaceMatch[7];
+      const permitsArr = permitsStr
+        ? permitsStr.split(',').map((s) => s.trim()).filter(Boolean)
+        : undefined;
+
+      // Extract generic params with bounds
+      const genericsStr = ifaceMatch[5];
+      const generics = genericsStr ? extractJavaGenerics(genericsStr) : undefined;
+
+      // Merge permits into extends (they represent subtype relationships)
+      const mergedExtends = extendsArr || permitsArr
+        ? [...(extendsArr ?? []), ...(permitsArr ?? [])]
+        : undefined;
+
       interfaces.push({
-        name: ifaceMatch[3]!,
-        extends: extendsArr,
+        name: ifaceMatch[4]!,
+        extends: mergedExtends,
         properties: [],
         methods: extractInterfaceMethods(bodyLines),
         exported: isExported(vis),
+        generics,
       });
 
       i = endLine;
@@ -190,7 +206,7 @@ function parseJava(content: string, filePath: string): FileAnalysis {
 
     // ─── Classes ──────────────────────────────────────────
     const classMatch = trimmed.match(
-      /^(public\s+|protected\s+|private\s+)?(static\s+)?(abstract\s+)?(final\s+)?class\s+(\w+)(?:<[^>]*>)?(?:\s+extends\s+([\w.<>,]+(?:\s*,\s*[\w.<>,]+)*))?(?:\s+implements\s+(.+?))?\s*\{/,
+      /^(public\s+|protected\s+|private\s+)?(static\s+)?(abstract\s+)?(final\s+)?(sealed\s+)?class\s+(\w+)(?:<[^>]*>)?(?:\s+extends\s+([\w.<>,]+(?:\s*,\s*[\w.<>,]+)*))?(?:\s+implements\s+(.+?))?(?:\s+permits\s+(.+?))?\s*\{/,
     );
     if (classMatch) {
       const endLine = findBlockEnd(lines, i);
@@ -198,19 +214,28 @@ function parseJava(content: string, filePath: string): FileAnalysis {
       const classBody = bodyLines.join('\n');
       const vis = parseVisibility(classMatch[1]?.trim() as string | undefined);
 
-      const implementsStr = classMatch[7];
+      const implementsStr = classMatch[8];
       const implementsArr = implementsStr
         ? implementsStr.split(',').map((s) => s.trim()).filter(Boolean)
         : undefined;
-      const extendsName = classMatch[6]?.trim().split(/[<\s]/)[0];
+      const extendsName = classMatch[7]?.trim().split(/[<\s]/)[0];
+
+      // Capture permits clause and merge into implements
+      const permitsStr = classMatch[9];
+      const permitsArr = permitsStr
+        ? permitsStr.split(',').map((s) => s.trim()).filter(Boolean)
+        : undefined;
+      const mergedImplements = implementsArr || permitsArr
+        ? [...(implementsArr ?? []), ...(permitsArr ?? [])]
+        : undefined;
 
       const decorators = pendingAnnotations.length > 0 ? [...pendingAnnotations] : undefined;
       pendingAnnotations = [];
 
       classes.push({
-        name: classMatch[5]!,
+        name: classMatch[6]!,
         extends: extendsName,
-        implements: implementsArr,
+        implements: mergedImplements,
         methods: extractClassMethods(bodyLines),
         properties: extractJavaFields(classBody),
         exported: isExported(vis),
@@ -552,6 +577,35 @@ function extractParamsFromSignature(signature: string): string {
   }
 
   return signature.slice(openIdx + 1);
+}
+
+function extractJavaGenerics(str: string): string[] {
+  const result: string[] = [];
+  let depth = 0;
+  let current = '';
+
+  for (const ch of str) {
+    if (ch === '<') {
+      /* v8 ignore next 2 -- nested generics blocked by regex [^>]* */
+      depth++;
+      current += ch;
+    } else if (ch === '>') {
+      /* v8 ignore next 2 -- nested generics blocked by regex [^>]* */
+      depth--;
+      current += ch;
+    } else if (ch === ',' && depth === 0) {
+      const trimmed = current.trim();
+      if (trimmed) result.push(trimmed);
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+
+  const last = current.trim();
+  if (last) result.push(last);
+
+  return result;
 }
 
 // ─── Plugin Factory ──────────────────────────────────────────────

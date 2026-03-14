@@ -16,7 +16,11 @@ export type LanguageId =
   | 'rust'
   | 'php'
   | 'java'
-  | 'csharp';
+  | 'csharp'
+  | 'kotlin'
+  | 'swift'
+  | 'ruby'
+  | 'dart';
 
 /** Available output format types */
 export type FormatType = 'compact' | 'json' | 'markdown' | 'llms-txt';
@@ -153,6 +157,7 @@ export interface StructInfo {
   readonly exported: boolean;
   readonly derives?: readonly string[] | undefined;
   readonly embeds?: readonly string[] | undefined;
+  readonly generics?: readonly string[] | undefined;
 }
 
 /** Trait information (Rust, PHP) */
@@ -161,6 +166,7 @@ export interface TraitInfo {
   readonly methods: readonly FunctionInfo[];
   readonly exported: boolean;
   readonly superTraits?: readonly string[] | undefined;
+  readonly generics?: readonly string[] | undefined;
 }
 
 /** Import information */

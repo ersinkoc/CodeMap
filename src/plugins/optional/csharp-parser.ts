@@ -235,7 +235,7 @@ function parseCsharp(content: string, filePath: string): FileAnalysis {
 
     // ─── Classes ──────────────────────────────────────────
     const classMatch = trimmed.match(
-      /^(?:public\s+|protected\s+|private\s+|internal\s+)?(?:static\s+)?(?:partial\s+)?(?:abstract\s+|sealed\s+)?class\s+(\w+)(?:<[^>]*>)?(?:\s*:\s*(.+?))?\s*\{/,
+      /^(?:public\s+|protected\s+|private\s+|internal\s+)?(?:static\s+)?(?:partial\s+)?(?:abstract\s+|sealed\s+)?class\s+(\w+)(?:<[^>]*>)?(?:\s*\(([^)]*)\))?(?:\s*:\s*(.+?))?\s*\{/,
     );
     if (classMatch) {
       const endLine = findBlockEnd(lines, i);
@@ -246,8 +246,19 @@ function parseCsharp(content: string, filePath: string): FileAnalysis {
       const decorators = pendingAttributes.length > 0 ? [...pendingAttributes] : undefined;
       pendingAttributes = [];
 
+      // Primary constructor parameters (C# 12)
+      const primaryCtorStr = classMatch[2];
+      const primaryCtorProps: PropertyInfo[] = primaryCtorStr
+        ? parseCsharpParams(primaryCtorStr).map((p) => ({
+            name: p.name,
+            type: p.type,
+            scope: 'public' as const,
+            readonly: true,
+          }))
+        : [];
+
       // In C#, the base list after : can contain both base class and interfaces
-      const baseStr = classMatch[2];
+      const baseStr = classMatch[3];
       let extendsName: string | undefined;
       let implementsArr: string[] | undefined;
 
@@ -274,6 +285,7 @@ function parseCsharp(content: string, filePath: string): FileAnalysis {
         implements: implementsArr,
         methods: extractClassMethods(bodyLines),
         properties: [
+          ...primaryCtorProps,
           ...extractCsharpFields(classBody),
           ...extractCsharpAutoProperties(bodyLines),
         ],
@@ -432,7 +444,9 @@ function extractCsharpAutoProperties(bodyLines: readonly string[]): PropertyInfo
       }
 
       const vis = parseVisibility(propMatch[1]?.trim() as string | undefined);
-      const isReadonly = !trimmed.includes('set') && !trimmed.includes('init');
+      // { get; set; } → not readonly, { get; init; } → readonly (init-only), { get; } → readonly
+      const hasMutableSet = /\bset\s*[;}]/.test(trimmed) || /\bprivate\s+set\b/.test(trimmed);
+      const isReadonly = !hasMutableSet;
 
       props.push({
         name,

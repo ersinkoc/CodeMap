@@ -4,7 +4,7 @@ AST-based codebase structure extractor for token-efficient LLM navigation.
 
 Scans your codebase and produces a compact structural map — function signatures, class hierarchies, type definitions, dependency graphs — that fits into an LLM's context window at **10-25x fewer tokens** than reading raw source files.
 
-**v0.1.0** adds deep code analysis: reverse dependencies, circular dependency detection, orphan file detection, and unused export analysis.
+**v0.2.0** adds 4 new languages (Kotlin, Swift, Ruby, Dart), improves all 7 existing parsers with modern language features, and includes deep code analysis (reverse deps, circular deps, orphans, unused exports).
 
 ## Install
 
@@ -35,7 +35,7 @@ console.log(map.output);
 
 ## Features
 
-- **7 Languages** — TypeScript/JavaScript, Go, Python, Rust, PHP, Java, C#
+- **11 Languages** — TypeScript/JavaScript, Go, Python, Rust, PHP, Java, C#, Kotlin, Swift, Ruby, Dart
 - **4 Output Formats** — Compact (default), JSON, Markdown, llms.txt
 - **Zero Dependencies** — Everything built from scratch
 - **Plugin Architecture** — Micro-kernel with auto-detection
@@ -265,6 +265,10 @@ export default defineConfig({
 | PHP | `.php` | ~85% |
 | Java | `.java` | ~85% |
 | C# | `.cs` | ~85% |
+| Kotlin | `.kt` `.kts` | ~85% |
+| Swift | `.swift` | ~85% |
+| Ruby | `.rb` | ~85% |
+| Dart | `.dart` | ~85% |
 
 ## Links
 

@@ -430,4 +430,73 @@ type Foo struct {
     expect(s.embeds).toBeDefined();
     expect(s.embeds).toContain('Bar');
   });
+
+  it('should extract generic function', () => {
+    const code = `package main
+
+func Map[T any, U any](items []T, fn func(T) U) []U {
+  return nil
+}`;
+    const result = parser.parse(code, 'main.go');
+
+    expect(result.functions).toHaveLength(1);
+    expect(result.functions[0]!.name).toBe('Map');
+    expect(result.functions[0]!.exported).toBe(true);
+  });
+
+  it('should extract generic struct', () => {
+    const code = `package main
+
+type Set[T comparable] struct {
+  items map[T]bool
+}`;
+    const result = parser.parse(code, 'main.go');
+
+    expect(result.structs).toBeDefined();
+    expect(result.structs).toHaveLength(1);
+    expect(result.structs![0]!.name).toBe('Set');
+    expect(result.structs![0]!.exported).toBe(true);
+  });
+
+  it('should extract generic interface', () => {
+    const code = `package main
+
+type Container[T any] interface {
+  Get() T
+}`;
+    const result = parser.parse(code, 'main.go');
+
+    expect(result.interfaces).toHaveLength(1);
+    expect(result.interfaces[0]!.name).toBe('Container');
+    expect(result.interfaces[0]!.exported).toBe(true);
+    expect(result.interfaces[0]!.methods).toHaveLength(1);
+    expect(result.interfaces[0]!.methods![0]!.name).toBe('Get');
+  });
+
+  it('should extract single const', () => {
+    const code = `package main
+
+const MaxRetries = 3`;
+    const result = parser.parse(code, 'main.go');
+
+    expect(result.constants).toHaveLength(1);
+    expect(result.constants[0]!.name).toBe('MaxRetries');
+    expect(result.constants[0]!.exported).toBe(true);
+  });
+
+  it('should extract grouped const block', () => {
+    const code = `package main
+
+const (
+  StatusOK = 200
+  StatusNotFound = 404
+)`;
+    const result = parser.parse(code, 'main.go');
+
+    expect(result.constants).toHaveLength(2);
+    expect(result.constants[0]!.name).toBe('StatusOK');
+    expect(result.constants[0]!.exported).toBe(true);
+    expect(result.constants[1]!.name).toBe('StatusNotFound');
+    expect(result.constants[1]!.exported).toBe(true);
+  });
 });

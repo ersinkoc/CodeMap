@@ -41,8 +41,8 @@ describe('getLanguageForExtension', () => {
   });
 
   it('should return undefined for unknown extensions', () => {
-    expect(getLanguageForExtension('.rb')).toBeUndefined();
-    expect(getLanguageForExtension('.swift')).toBeUndefined();
+    expect(getLanguageForExtension('.rb')).toBe('ruby');
+    expect(getLanguageForExtension('.swift')).toBe('swift');
     expect(getLanguageForExtension('.xyz')).toBeUndefined();
   });
 });

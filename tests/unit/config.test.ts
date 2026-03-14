@@ -20,7 +20,7 @@ describe('defineConfig', () => {
 
   it('should throw ConfigError for invalid language', () => {
     expect(() =>
-      defineConfig({ languages: ['ruby' as never] }),
+      defineConfig({ languages: ['brainfuck' as never] }),
     ).toThrow(ConfigError);
   });
 

@@ -13,6 +13,10 @@ import { createRustParserPlugin } from './optional/rust-parser.js';
 import { createPhpParserPlugin } from './optional/php-parser.js';
 import { createJavaParserPlugin } from './optional/java-parser.js';
 import { createCsharpParserPlugin } from './optional/csharp-parser.js';
+import { createKotlinParserPlugin } from './optional/kotlin-parser.js';
+import { createSwiftParserPlugin } from './optional/swift-parser.js';
+import { createRubyParserPlugin } from './optional/ruby-parser.js';
+import { createDartParserPlugin } from './optional/dart-parser.js';
 import { createJsonFormatterPlugin } from './optional/json-formatter.js';
 import { createMarkdownFormatterPlugin } from './optional/markdown-formatter.js';
 import { createLlmsTxtFormatterPlugin } from './optional/llms-txt-formatter.js';
@@ -33,6 +37,10 @@ const LANGUAGE_PLUGIN_MAP: Record<LanguageId, () => CodemapPlugin> = {
   php: createPhpParserPlugin,
   java: createJavaParserPlugin,
   csharp: createCsharpParserPlugin,
+  kotlin: createKotlinParserPlugin,
+  swift: createSwiftParserPlugin,
+  ruby: createRubyParserPlugin,
+  dart: createDartParserPlugin,
 };
 
 /**

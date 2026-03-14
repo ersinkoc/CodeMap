@@ -459,6 +459,47 @@ impl Wrapper {
     expect(mutate!.params[0]!.type).toBe('Self');
   });
 
+  it('should extract lifetime generics from struct', () => {
+    const code = `pub struct Ref<'a> {
+    data: &'a str,
+}`;
+    const result = parser.parse(code, 'lib.rs');
+
+    expect(result.structs).toBeDefined();
+    expect(result.structs).toHaveLength(1);
+    const ref = result.structs![0]!;
+    expect(ref.name).toBe('Ref');
+    expect(ref.generics).toBeDefined();
+    expect(ref.generics).toContain("'a");
+  });
+
+  it('should capture where clause in function return type', () => {
+    const code = `pub fn process<T>(item: T) -> T where T: Clone + Debug {
+    item.clone()
+}`;
+    const result = parser.parse(code, 'lib.rs');
+
+    expect(result.functions).toHaveLength(1);
+    expect(result.functions[0]!.name).toBe('process');
+    expect(result.functions[0]!.returnType).toContain('where');
+    expect(result.functions[0]!.returnType).toContain('T');
+  });
+
+  it('should extract lifetime and type generics from trait', () => {
+    const code = `pub trait Parser<'a, T> {
+    fn parse(&'a self) -> T;
+}`;
+    const result = parser.parse(code, 'lib.rs');
+
+    expect(result.traits).toBeDefined();
+    expect(result.traits).toHaveLength(1);
+    const trait = result.traits![0]!;
+    expect(trait.name).toBe('Parser');
+    expect(trait.generics).toBeDefined();
+    expect(trait.generics).toContain("'a");
+    expect(trait.generics).toContain('T');
+  });
+
   it('should handle function with very long multi-line signature (fallback)', () => {
     // Create a function with params spanning more than 15 lines
     const lines = ['pub fn big_func('];
@@ -513,5 +554,36 @@ impl Wrapper {
 
     expect(result.functions).toHaveLength(1);
     expect(result.functions[0]!.name).toBe('process');
+  });
+
+  it('should extract multiple type generics from struct (comma-separated type params)', () => {
+    const code = `pub struct Pair<K: Clone, V: Debug> {
+    key: K,
+    value: V,
+}`;
+    const result = parser.parse(code, 'lib.rs');
+
+    expect(result.structs).toBeDefined();
+    expect(result.structs).toHaveLength(1);
+    const pair = result.structs![0]!;
+    expect(pair.name).toBe('Pair');
+    expect(pair.generics).toBeDefined();
+    expect(pair.generics).toContain('K');
+    expect(pair.generics).toContain('V');
+  });
+
+  it('should handle collectRustSignature when return type spans to end without brace or semicolon', () => {
+    // Trait method where closing paren and return type are on the same line,
+    // but there is no { or ; on any subsequent line within the scan window.
+    // This triggers the fallback return at line 551 in collectRustSignature.
+    const code = `pub trait Processor {
+    fn transform(&self, data: Vec<u8>) -> Vec<u8>
+}`;
+    const result = parser.parse(code, 'lib.rs');
+
+    expect(result.traits).toBeDefined();
+    expect(result.traits).toHaveLength(1);
+    expect(result.traits![0]!.methods).toHaveLength(1);
+    expect(result.traits![0]!.methods[0]!.name).toBe('transform');
   });
 });
