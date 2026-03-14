@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.5 (2026-03-14)
+
+- Test/spec/config files excluded by default (`*.test.ts`, `*.spec.ts`, `*.config.ts`, `__tests__/`, `tests/`)
+- No `.codemapignore` needed for common exclusions
+
 ## 0.0.4 (2026-03-14)
 
 - `init` command now auto-updates `.gitignore` to exclude `.codemap/*` but keep `map.txt`

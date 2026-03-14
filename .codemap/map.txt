@@ -1,5 +1,5 @@
 # CODEMAP — D:\Codebox\__NPM__\CodeMap\src
-# Generated: 2026-03-14 | Files: 37 | LOC: 6,449 | ~69,290 tokens
+# Generated: 2026-03-14 | Files: 37 | LOC: 6,467 | ~69,370 tokens
 
 ## EXTERNAL DEPS
   node:path: resolve, join, extname, relative
@@ -356,7 +356,7 @@
   ƒ installPreCommitHook(repoDir: string) → boolean
   ƒ uninstallPreCommitHook(repoDir: string) → boolean
 
-━━ utils/glob-matcher.ts (128L) [~1,324T]
+━━ utils/glob-matcher.ts (146L) [~1,404T]
   ƒ globToRegex(pattern: string) → RegExp
   ƒ matchGlob(filePath: string, pattern: string) → boolean
   ƒ shouldIgnore(filePath: string, patterns: readonly string[]) → boolean
