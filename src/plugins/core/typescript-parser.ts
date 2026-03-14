@@ -61,10 +61,55 @@ function parseTypeScript(content: string, filePath: string): FileAnalysis {
     // Use raw lines for import/re-export matching because
     // the comment stripper removes string literals (module specifiers).
     const rawTrimmed = rawLines[i]!.trim();
-    parseImport(rawTrimmed, rawLines, i, imports);
+
+    // Handle multi-line imports: import { ... \n ... } from '...'
+    if (/^import\s+(type\s+)?\{/.test(rawTrimmed) && !rawTrimmed.includes('}')) {
+      let collected = rawTrimmed;
+      let j = i + 1;
+      while (j < rawLines.length) {
+        const nextRaw = rawLines[j]!.trim();
+        collected += ' ' + nextRaw;
+        if (nextRaw.includes('}')) {
+          // Might need to grab from line too
+          if (!collected.includes('from')) {
+            j++;
+            if (j < rawLines.length) {
+              collected += ' ' + rawLines[j]!.trim();
+            }
+          }
+          break;
+        }
+        j++;
+      }
+      parseImport(collected, rawLines, i, imports);
+      i = j;
+      continue;
+    } else {
+      parseImport(rawTrimmed, rawLines, i, imports);
+    }
 
     // ─── Re-exports ───────────────────────────────────────
-    parseReExport(rawTrimmed, exports);
+    // Handle multi-line: export (type)? { ... } from '...'
+    if (/^export\s+(type\s+)?\{/.test(rawTrimmed) && rawTrimmed.includes('from')) {
+      parseReExport(rawTrimmed, exports);
+    } else if (/^export\s+(type\s+)?\{/.test(rawTrimmed) && !rawTrimmed.includes('}')) {
+      // Multi-line re-export: collect lines until closing brace + from
+      let collected = rawTrimmed;
+      let j = i + 1;
+      while (j < rawLines.length) {
+        const nextRaw = rawLines[j]!.trim();
+        collected += ' ' + nextRaw;
+        if (nextRaw.includes('from')) {
+          break;
+        }
+        j++;
+      }
+      parseReExport(collected, exports);
+      i = j;
+      continue;
+    } else {
+      parseReExport(rawTrimmed, exports);
+    }
 
     // ─── Enums ────────────────────────────────────────────
     const enumMatch = trimmed.match(
@@ -353,7 +398,7 @@ function parseImport(
 
 function parseReExport(line: string, exports: ExportInfo[]): void {
   const match = line.match(
-    /^export\s+\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/,
+    /^export\s+(?:type\s+)?\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/,
   );
   if (match) {
     const names = match[1]!

@@ -9,22 +9,7 @@
 import { readdirSync, statSync, readFileSync } from 'node:fs';
 import { join, extname, relative } from 'node:path';
 import { shouldIgnore, DEFAULT_IGNORE_PATTERNS } from './utils/glob-matcher.js';
-
-/** Map of file extensions to language identifiers */
-const EXTENSION_MAP: Readonly<Record<string, string>> = {
-  '.ts': 'typescript',
-  '.tsx': 'typescript',
-  '.js': 'typescript',
-  '.jsx': 'typescript',
-  '.mjs': 'typescript',
-  '.mts': 'typescript',
-  '.go': 'go',
-  '.py': 'python',
-  '.rs': 'rust',
-  '.php': 'php',
-  '.java': 'java',
-  '.cs': 'csharp',
-};
+import { EXTENSION_LANGUAGE_MAP } from './language-map.js';
 
 /** Scanned file entry */
 export interface ScannedFile {
@@ -45,7 +30,7 @@ export interface ScannedFile {
  * @returns Language identifier or undefined
  */
 export function getLanguageForExtension(ext: string): string | undefined {
-  return EXTENSION_MAP[ext.toLowerCase()];
+  return EXTENSION_LANGUAGE_MAP[ext.toLowerCase()];
 }
 
 /**
@@ -54,7 +39,7 @@ export function getLanguageForExtension(ext: string): string | undefined {
  * @returns Array of supported extensions
  */
 export function getSupportedExtensions(): string[] {
-  return Object.keys(EXTENSION_MAP);
+  return Object.keys(EXTENSION_LANGUAGE_MAP);
 }
 
 /**

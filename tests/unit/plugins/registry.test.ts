@@ -235,14 +235,15 @@ describe('Plugin Registry', () => {
         incremental: true,
         monorepo: true,
       });
-      // ignore + complexity + incremental + monorepo = 4
-      expect(plugins.length).toBe(4);
+      // ignore + code-analysis + complexity + incremental + monorepo = 5
+      expect(plugins.length).toBe(5);
     });
 
-    it('should only include ignore plugin when none enabled', () => {
+    it('should only include ignore and code-analysis plugins when none enabled', () => {
       const plugins = getFeaturePlugins({});
-      expect(plugins.length).toBe(1);
+      expect(plugins.length).toBe(2);
       expect(plugins[0]!.name).toBe('ignore');
+      expect(plugins[1]!.name).toBe('code-analysis');
     });
   });
 

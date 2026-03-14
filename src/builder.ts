@@ -13,17 +13,8 @@ import type {
   LanguageId,
   ScanResult,
   CodemapWatcher,
-  WatchEvent,
 } from './types.js';
-import { DEFAULT_CONFIG, loadConfig } from './config.js';
-import { createKernel, Kernel } from './kernel.js';
-import {
-  getCorePlugins,
-  autoDetectPlugins,
-  getFormatterPlugins,
-  getFeaturePlugins,
-} from './plugins/registry.js';
-import { scanDirectory } from './scanner.js';
+import { setupKernel } from './kernel.js';
 import { createFileWatcher } from './watcher.js';
 
 /**
@@ -135,7 +126,7 @@ export class CodemapBuilder {
    */
   async scan(): Promise<ScanResult> {
     const config = this.buildConfig();
-    const kernel = this.buildKernel(config);
+    const kernel = setupKernel(config, this._plugins);
     return kernel.scan();
   }
 
@@ -144,8 +135,7 @@ export class CodemapBuilder {
    */
   watch(): CodemapWatcher {
     const config = this.buildConfig();
-    const kernel = this.buildKernel(config);
-
+    const kernel = setupKernel(config, this._plugins);
     return createFileWatcher(kernel, config, this._debounce);
   }
 
@@ -165,57 +155,5 @@ export class CodemapBuilder {
       monorepo: this._monorepo,
       watch: { debounce: this._debounce },
     };
-  }
-
-  /**
-   * Build and configure the kernel with all needed plugins.
-   */
-  private buildKernel(config: CodemapConfig): Kernel {
-    const kernel = createKernel(config);
-
-    // Register core plugins
-    for (const plugin of getCorePlugins()) {
-      kernel.use(plugin);
-    }
-
-    // Auto-detect language plugins based on scanned files
-    const extensions = new Set<string>();
-    const scannedFiles = scanDirectory(config.root, {
-      ignorePatterns: config.ignore ? [...config.ignore] : [],
-      languages: config.languages as string[] | undefined,
-    });
-    for (const file of scannedFiles) {
-      const ext = '.' + file.relativePath.split('.').pop();
-      extensions.add(ext);
-    }
-    for (const plugin of autoDetectPlugins(extensions)) {
-      if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
-        kernel.use(plugin);
-      }
-    }
-
-    // Register formatter plugins
-    const formats = Array.isArray(config.format) ? config.format : [config.format];
-    for (const plugin of getFormatterPlugins(formats)) {
-      if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
-        kernel.use(plugin);
-      }
-    }
-
-    // Register feature plugins
-    for (const plugin of getFeaturePlugins(config)) {
-      if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
-        kernel.use(plugin);
-      }
-    }
-
-    // Register custom plugins
-    for (const plugin of this._plugins) {
-      if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
-        kernel.use(plugin);
-      }
-    }
-
-    return kernel;
   }
 }

@@ -38,6 +38,7 @@ function formatJson(result: ScanResult): string {
         packages: f.packages,
       })),
       dependencyGraph: result.dependencyGraph,
+      ...(result.analysis && { analysis: result.analysis }),
     },
     null,
     2,

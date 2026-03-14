@@ -33,6 +33,7 @@ export { createIncrementalPlugin } from './optional/incremental.js';
 export { createGitHooksPlugin, installHook, uninstallHook } from './optional/git-hooks.js';
 export { createClaudeMdPlugin, injectIntoClaudeMd } from './optional/claude-md.js';
 export { createMonorepoPlugin, detectWorkspaces } from './optional/monorepo.js';
+export { createCodeAnalysisPlugin, analyzeCode } from './optional/code-analysis.js';
 
 // Registry
 export {

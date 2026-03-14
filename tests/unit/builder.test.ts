@@ -43,6 +43,7 @@ function makeMockKernel() {
 vi.mock('../../src/kernel.js', () => {
   return {
     createKernel: vi.fn(() => makeMockKernel()),
+    setupKernel: vi.fn(() => makeMockKernel()),
     Kernel: vi.fn(() => makeMockKernel()),
   };
 });
@@ -207,11 +208,11 @@ describe('CodemapBuilder', () => {
       expect(result).toHaveProperty('stats');
     });
 
-    it('should call createKernel and kernel.scan', async () => {
-      const { createKernel } = await import('../../src/kernel.js');
+    it('should call setupKernel and kernel.scan', async () => {
+      const { setupKernel } = await import('../../src/kernel.js');
       const builder = new CodemapBuilder().root('./src');
       await builder.scan();
-      expect(createKernel).toHaveBeenCalled();
+      expect(setupKernel).toHaveBeenCalled();
     });
 
     it('should work with custom plugins', async () => {

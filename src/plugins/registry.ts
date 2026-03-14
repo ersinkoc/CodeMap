@@ -4,6 +4,7 @@
  */
 
 import type { CodemapPlugin, LanguageId } from '../types.js';
+import { EXTENSION_LANGUAGE_MAP } from '../language-map.js';
 import { createTypescriptParserPlugin } from './core/typescript-parser.js';
 import { createCompactFormatterPlugin } from './core/compact-formatter.js';
 import { createGoParserPlugin } from './optional/go-parser.js';
@@ -21,22 +22,9 @@ import { createIncrementalPlugin } from './optional/incremental.js';
 import { createGitHooksPlugin } from './optional/git-hooks.js';
 import { createClaudeMdPlugin } from './optional/claude-md.js';
 import { createMonorepoPlugin } from './optional/monorepo.js';
+import { createCodeAnalysisPlugin } from './optional/code-analysis.js';
 
-/** Extension to language mapping for auto-detection */
-const EXTENSION_LANGUAGE_MAP: Record<string, LanguageId> = {
-  '.ts': 'typescript',
-  '.tsx': 'typescript',
-  '.js': 'typescript',
-  '.jsx': 'typescript',
-  '.mjs': 'typescript',
-  '.mts': 'typescript',
-  '.go': 'go',
-  '.py': 'python',
-  '.rs': 'rust',
-  '.php': 'php',
-  '.java': 'java',
-  '.cs': 'csharp',
-};
+export { EXTENSION_LANGUAGE_MAP };
 
 /** Language to parser plugin factory mapping */
 const LANGUAGE_PLUGIN_MAP: Record<LanguageId, () => CodemapPlugin> = {
@@ -127,7 +115,7 @@ export function getFeaturePlugins(config: {
   incremental?: boolean | undefined;
   monorepo?: boolean | undefined;
 }): CodemapPlugin[] {
-  const plugins: CodemapPlugin[] = [createIgnorePlugin()];
+  const plugins: CodemapPlugin[] = [createIgnorePlugin(), createCodeAnalysisPlugin()];
 
   if (config.complexity) {
     plugins.push(createComplexityPlugin());
@@ -145,4 +133,5 @@ export function getFeaturePlugins(config: {
 export {
   createGitHooksPlugin,
   createClaudeMdPlugin,
+  createCodeAnalysisPlugin,
 };

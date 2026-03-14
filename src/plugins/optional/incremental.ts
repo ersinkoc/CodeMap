@@ -34,6 +34,7 @@ function loadCache(outputDir: string): CacheData | null {
 
 /**
  * Save the incremental cache.
+ * Reads actual file content from disk to compute hashes.
  */
 function saveCache(outputDir: string, result: ScanResult): void {
   if (!existsSync(outputDir)) {
@@ -42,7 +43,14 @@ function saveCache(outputDir: string, result: ScanResult): void {
 
   const files: Record<string, string> = {};
   for (const file of result.files) {
-    files[file.path] = hashContent(file.path);
+    const absPath = join(result.root, file.path);
+    try {
+      const content = readFileSync(absPath, 'utf-8');
+      files[file.path] = hashContent(content);
+    } catch {
+      // File may have been deleted between scan and cache save
+      files[file.path] = '';
+    }
   }
 
   const cache: CacheData = {

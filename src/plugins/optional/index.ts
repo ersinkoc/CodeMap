@@ -18,3 +18,4 @@ export { createIncrementalPlugin, getIncrementalFiles } from './incremental.js';
 export { createGitHooksPlugin, installHook, uninstallHook } from './git-hooks.js';
 export { createClaudeMdPlugin, injectIntoClaudeMd } from './claude-md.js';
 export { createMonorepoPlugin, detectWorkspaces } from './monorepo.js';
+export { createCodeAnalysisPlugin, analyzeCode } from './code-analysis.js';

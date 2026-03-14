@@ -98,9 +98,21 @@ export function globToRegex(pattern: string): RegExp {
  * matchGlob('node_modules/foo/bar.js', 'node_modules'); // true
  * ```
  */
+/** Cache compiled regexes to avoid recompiling for every file path */
+const regexCache = new Map<string, RegExp>();
+
+function getCachedRegex(pattern: string): RegExp {
+  let re = regexCache.get(pattern);
+  if (!re) {
+    re = globToRegex(pattern);
+    regexCache.set(pattern, re);
+  }
+  return re;
+}
+
 export function matchGlob(filePath: string, pattern: string): boolean {
   const normalized = filePath.replace(/\\/g, '/');
-  const re = globToRegex(pattern);
+  const re = getCachedRegex(pattern);
   if (re.test(normalized)) return true;
 
   // For bare directory patterns (no glob characters), also match if the path

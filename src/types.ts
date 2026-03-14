@@ -217,6 +217,26 @@ export interface ScanStats {
   readonly changedFiles?: number | undefined;
 }
 
+/** Result of code analysis — reverse deps, orphans, unused, circular */
+export interface CodeAnalysis {
+  /** Reverse dependency graph: file → files that import it */
+  readonly reverseDeps: Readonly<Record<string, readonly string[]>>;
+  /** Files not imported by any other file */
+  readonly orphanFiles: readonly string[];
+  /** Exported symbols that are never imported anywhere */
+  readonly unusedExports: readonly UnusedExport[];
+  /** Circular dependency chains detected */
+  readonly circularDeps: ReadonlyArray<readonly string[]>;
+  /** Entry points detected from package.json */
+  readonly entryPoints: readonly string[];
+}
+
+/** An exported symbol that is never imported */
+export interface UnusedExport {
+  readonly file: string;
+  readonly name: string;
+}
+
 /** Result of scanning a codebase */
 export interface ScanResult {
   readonly root: string;
@@ -227,6 +247,8 @@ export interface ScanResult {
   readonly stats: ScanStats;
   readonly output?: string | undefined;
   readonly workspaces?: Readonly<Record<string, ScanResult>> | undefined;
+  /** Deep code analysis results (reverse deps, orphans, unused exports, circular deps) */
+  readonly analysis?: CodeAnalysis | undefined;
 }
 
 // ─── Plugin System ───────────────────────────────────────────────────

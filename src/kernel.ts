@@ -23,23 +23,86 @@ import type {
 import { PluginError, ScanError } from './errors.js';
 import { scanDirectory, readIgnoreFile } from './scanner.js';
 import { estimateTokens, countLoc } from './token-estimator.js';
+import {
+  getCorePlugins,
+  autoDetectPlugins,
+  getFormatterPlugins,
+  getFeaturePlugins,
+} from './plugins/registry.js';
 
 /**
  * Create a new micro kernel instance.
  *
  * @param config - Resolved configuration
  * @returns Kernel instance with plugin management and scan capabilities
- *
- * @example
- * ```typescript
- * const kernel = createKernel(config);
- * kernel.registerParser(typescriptParser);
- * kernel.registerFormatter(compactFormatter);
- * const result = await kernel.scan();
- * ```
  */
 export function createKernel(config: CodemapConfig): Kernel {
   return new Kernel(config);
+}
+
+/**
+ * Create and fully configure a kernel with all needed plugins.
+ *
+ * This is the single entry point for kernel setup — replaces the duplicated
+ * setup logic that was previously in index.ts, builder.ts, and cli.ts.
+ * Also pre-scans files to detect languages, avoiding double directory traversal.
+ *
+ * @param config - Resolved configuration
+ * @param extraPlugins - Additional custom plugins to register
+ * @returns Fully configured Kernel ready to scan
+ */
+export function setupKernel(
+  config: CodemapConfig,
+  extraPlugins: readonly CodemapPlugin[] = [],
+): Kernel {
+  const kernel = new Kernel(config);
+
+  // 1. Core plugins (TypeScript parser + compact formatter)
+  for (const plugin of getCorePlugins()) {
+    kernel.use(plugin);
+  }
+
+  // 2. Pre-scan to detect file extensions (single pass — kernel.scan() reuses this)
+  const scannedFiles = scanDirectory(config.root, {
+    ignorePatterns: config.ignore ? [...config.ignore] : [],
+    languages: config.languages as string[] | undefined,
+  });
+  const extensions = new Set<string>();
+  for (const file of scannedFiles) {
+    const ext = '.' + file.relativePath.split('.').pop();
+    extensions.add(ext);
+  }
+
+  // 3. Auto-detect language plugins
+  for (const plugin of autoDetectPlugins(extensions)) {
+    if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
+      kernel.use(plugin);
+    }
+  }
+
+  // 4. Formatter plugins
+  const formats = Array.isArray(config.format) ? config.format : [config.format];
+  for (const plugin of getFormatterPlugins(formats)) {
+    if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
+      kernel.use(plugin);
+    }
+  }
+
+  // 5. Feature plugins (ignore, complexity, incremental, monorepo)
+  for (const plugin of getFeaturePlugins(config)) {
+    if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
+      kernel.use(plugin);
+    }
+  }
+
+  // 6. Custom plugins
+  for (const plugin of extraPlugins) {
+    if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
+      kernel.use(plugin);
+    }
+  }
+
+  return kernel;
 }
 
 /**

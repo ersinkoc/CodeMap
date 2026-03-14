@@ -21,6 +21,7 @@ import type {
   HookInfo,
   StructInfo,
   TraitInfo,
+  CodeAnalysis,
 } from '../../types.js';
 
 // ─── Symbol Legend ────────────────────────────────────────────────────
@@ -341,6 +342,71 @@ function formatDependencyGraph(graph: Readonly<Record<string, readonly string[]>
   return lines.join('\n');
 }
 
+// ─── Code Analysis Formatters ────────────────────────────────────────
+
+function formatReverseDeps(analysis: CodeAnalysis): string {
+  const entries = Object.entries(analysis.reverseDeps).filter(
+    ([, importers]) => importers.length > 0,
+  );
+  if (entries.length === 0) return '';
+
+  const lines: string[] = ['', '## REVERSE DEPS (who imports me?)'];
+  for (const [file, importers] of entries) {
+    lines.push(`  ${file} ← ${importers.join(', ')}`);
+  }
+  return lines.join('\n');
+}
+
+function formatOrphanFiles(analysis: CodeAnalysis): string {
+  if (analysis.orphanFiles.length === 0) return '';
+
+  const lines: string[] = ['', '## ORPHAN FILES (not imported by anyone)'];
+  for (const file of analysis.orphanFiles) {
+    lines.push(`  ⚠ ${file}`);
+  }
+  return lines.join('\n');
+}
+
+function formatUnusedExports(analysis: CodeAnalysis): string {
+  if (analysis.unusedExports.length === 0) return '';
+
+  const lines: string[] = ['', '## UNUSED EXPORTS (exported but never imported)'];
+  // Group by file
+  const grouped = new Map<string, string[]>();
+  for (const { file, name } of analysis.unusedExports) {
+    let names = grouped.get(file);
+    if (!names) {
+      names = [];
+      grouped.set(file, names);
+    }
+    names.push(name);
+  }
+  for (const [file, names] of grouped) {
+    lines.push(`  ⚠ ${file}: ${names.join(', ')}`);
+  }
+  return lines.join('\n');
+}
+
+function formatCircularDeps(analysis: CodeAnalysis): string {
+  if (analysis.circularDeps.length === 0) return '';
+
+  const lines: string[] = ['', '## CIRCULAR DEPS'];
+  for (const cycle of analysis.circularDeps) {
+    lines.push(`  ⟳ ${cycle.join(' → ')}`);
+  }
+  return lines.join('\n');
+}
+
+function formatEntryPoints(analysis: CodeAnalysis): string {
+  if (analysis.entryPoints.length === 0) return '';
+
+  const lines: string[] = ['', '## ENTRY POINTS'];
+  for (const entry of analysis.entryPoints) {
+    lines.push(`  ▶ ${entry}`);
+  }
+  return lines.join('\n');
+}
+
 // ─── Main Formatter ──────────────────────────────────────────────────
 
 /**
@@ -376,6 +442,26 @@ export function formatCompact(result: ScanResult, _options?: Record<string, unkn
   const graphSection = formatDependencyGraph(result.dependencyGraph);
   if (graphSection) {
     sections.push(graphSection);
+  }
+
+  // Code analysis sections
+  if (result.analysis) {
+    const a = result.analysis;
+
+    const entrySection = formatEntryPoints(a);
+    if (entrySection) sections.push(entrySection);
+
+    const reverseSection = formatReverseDeps(a);
+    if (reverseSection) sections.push(reverseSection);
+
+    const circularSection = formatCircularDeps(a);
+    if (circularSection) sections.push(circularSection);
+
+    const orphanSection = formatOrphanFiles(a);
+    if (orphanSection) sections.push(orphanSection);
+
+    const unusedSection = formatUnusedExports(a);
+    if (unusedSection) sections.push(unusedSection);
   }
 
   return sections.join('\n').trimEnd() + '\n';

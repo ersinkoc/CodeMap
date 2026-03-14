@@ -96,15 +96,17 @@ export function scanOptionsToConfig(
   options?: ScanOptions,
 ): Partial<CodemapConfig> {
   if (!options) return { root };
-  const result: Partial<CodemapConfig> = { root };
-  if (options.format !== undefined) (result as Record<string, unknown>)['format'] = options.format;
-  if (options.incremental !== undefined) (result as Record<string, unknown>)['incremental'] = options.incremental;
-  if (options.complexity !== undefined) (result as Record<string, unknown>)['complexity'] = options.complexity;
-  if (options.tokenCounts !== undefined) (result as Record<string, unknown>)['tokenCounts'] = options.tokenCounts;
-  if (options.monorepo !== undefined) (result as Record<string, unknown>)['monorepo'] = options.monorepo;
-  if (options.ignore !== undefined) (result as Record<string, unknown>)['ignore'] = options.ignore;
-  if (options.languages !== undefined) (result as Record<string, unknown>)['languages'] = options.languages;
-  return result;
+
+  return {
+    root,
+    ...(options.format !== undefined && { format: options.format }),
+    ...(options.incremental !== undefined && { incremental: options.incremental }),
+    ...(options.complexity !== undefined && { complexity: options.complexity }),
+    ...(options.tokenCounts !== undefined && { tokenCounts: options.tokenCounts }),
+    ...(options.monorepo !== undefined && { monorepo: options.monorepo }),
+    ...(options.ignore !== undefined && { ignore: options.ignore }),
+    ...(options.languages !== undefined && { languages: options.languages }),
+  } satisfies Partial<CodemapConfig>;
 }
 
 /**
@@ -167,23 +169,22 @@ function loadPackageJsonConfig(cwd: string): Partial<CodemapConfig> {
 }
 
 /**
- * Load codemap.config.ts or codemap.config.js.
- * Only loads JSON-compatible .js configs synchronously.
+ * Load codemap.config.js (JSON-compatible default export).
+ * Falls back to empty config if the file cannot be parsed.
  */
 function loadConfigFile(cwd: string): Partial<CodemapConfig> {
-  // Try .js config (JSON export)
   const jsPath = join(cwd, 'codemap.config.js');
-  if (existsSync(jsPath)) {
-    try {
-      const content = readFileSync(jsPath, 'utf-8');
-      // Simple extraction of default export object for basic configs
-      const match = content.match(/export\s+default\s+({[\s\S]*?})\s*;?\s*$/m);
-      if (match?.[1]) {
-        // Can't eval safely, skip file configs that aren't JSON
-      }
-    } catch {
-      // Skip
+  if (!existsSync(jsPath)) return {};
+
+  try {
+    const content = readFileSync(jsPath, 'utf-8');
+    // Extract a JSON object from: export default { ... };
+    const match = content.match(/export\s+default\s+({[\s\S]*?})\s*;?\s*$/m);
+    if (match?.[1]) {
+      return JSON.parse(match[1]) as Partial<CodemapConfig>;
     }
+  } catch {
+    // Not JSON-compatible, skip
   }
 
   return {};

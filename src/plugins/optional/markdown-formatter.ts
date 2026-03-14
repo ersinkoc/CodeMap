@@ -61,6 +61,63 @@ function formatMarkdown(result: ScanResult): string {
     lines.push('');
   }
 
+  // Code analysis
+  if (result.analysis) {
+    const a = result.analysis;
+
+    if (a.entryPoints.length > 0) {
+      lines.push('## Entry Points');
+      lines.push('');
+      for (const entry of a.entryPoints) {
+        lines.push(`- ▶ \`${entry}\``);
+      }
+      lines.push('');
+    }
+
+    const reverseDepsEntries = Object.entries(a.reverseDeps).filter(([, v]) => v.length > 0);
+    if (reverseDepsEntries.length > 0) {
+      lines.push('## Reverse Dependencies');
+      lines.push('');
+      for (const [file, importers] of reverseDepsEntries) {
+        lines.push(`- \`${file}\` ← ${importers.map((i) => `\`${i}\``).join(', ')}`);
+      }
+      lines.push('');
+    }
+
+    if (a.circularDeps.length > 0) {
+      lines.push('## Circular Dependencies');
+      lines.push('');
+      for (const cycle of a.circularDeps) {
+        lines.push(`- ⟳ ${cycle.map((c) => `\`${c}\``).join(' → ')}`);
+      }
+      lines.push('');
+    }
+
+    if (a.orphanFiles.length > 0) {
+      lines.push('## Orphan Files');
+      lines.push('');
+      for (const file of a.orphanFiles) {
+        lines.push(`- ⚠ \`${file}\``);
+      }
+      lines.push('');
+    }
+
+    if (a.unusedExports.length > 0) {
+      lines.push('## Unused Exports');
+      lines.push('');
+      const grouped = new Map<string, string[]>();
+      for (const { file, name } of a.unusedExports) {
+        let names = grouped.get(file);
+        if (!names) { names = []; grouped.set(file, names); }
+        names.push(name);
+      }
+      for (const [file, names] of grouped) {
+        lines.push(`- ⚠ \`${file}\`: ${names.map((n) => `\`${n}\``).join(', ')}`);
+      }
+      lines.push('');
+    }
+  }
+
   return lines.join('\n');
 }
 

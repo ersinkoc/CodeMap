@@ -8,20 +8,11 @@
 import { resolve, join } from 'node:path';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { loadConfig, parseFormatString, DEFAULT_CONFIG } from './config.js';
-import { createKernel } from './kernel.js';
-import {
-  getCorePlugins,
-  autoDetectPlugins,
-  getFormatterPlugins,
-  getFeaturePlugins,
-  createGitHooksPlugin,
-  createClaudeMdPlugin,
-} from './plugins/registry.js';
-import { scanDirectory } from './scanner.js';
+import { setupKernel } from './kernel.js';
 import { installHook, uninstallHook } from './plugins/optional/git-hooks.js';
 import { injectIntoClaudeMd } from './plugins/optional/claude-md.js';
 import { createFileWatcher } from './watcher.js';
-import type { CodemapConfig, FormatType, ScanResult } from './types.js';
+import type { CodemapConfig, ScanResult } from './types.js';
 
 /** CLI argument parsing result */
 interface CliArgs {
@@ -127,7 +118,6 @@ Options:
  * Get version from package.json.
  */
 function getVersion(): string {
-  // Try multiple paths to find package.json (works in both dev and installed contexts)
   const candidates = [
     join(import.meta.dirname ?? '.', '..', 'package.json'),
     join(import.meta.dirname ?? '.', 'package.json'),
@@ -150,43 +140,7 @@ function getVersion(): string {
  * Execute a full scan and write output files.
  */
 async function runScan(config: CodemapConfig): Promise<ScanResult> {
-  const kernel = createKernel(config);
-
-  // Register core plugins
-  for (const plugin of getCorePlugins()) {
-    kernel.use(plugin);
-  }
-
-  // Auto-detect languages
-  const extensions = new Set<string>();
-  const scannedFiles = scanDirectory(config.root, {
-    ignorePatterns: config.ignore ? [...config.ignore] : [],
-    languages: config.languages as string[] | undefined,
-  });
-  for (const file of scannedFiles) {
-    const ext = '.' + file.relativePath.split('.').pop();
-    extensions.add(ext);
-  }
-  for (const plugin of autoDetectPlugins(extensions)) {
-    if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
-      kernel.use(plugin);
-    }
-  }
-
-  // Register formatters
-  const formats = Array.isArray(config.format) ? config.format : [config.format];
-  for (const plugin of getFormatterPlugins(formats)) {
-    if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
-      kernel.use(plugin);
-    }
-  }
-
-  // Register feature plugins
-  for (const plugin of getFeaturePlugins(config)) {
-    if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
-      kernel.use(plugin);
-    }
-  }
+  const kernel = setupKernel(config);
 
   // Run scan
   const result = await kernel.scan();
@@ -197,6 +151,7 @@ async function runScan(config: CodemapConfig): Promise<ScanResult> {
     mkdirSync(outputDir, { recursive: true });
   }
 
+  const formats = Array.isArray(config.format) ? config.format : [config.format];
   for (const fmt of formats) {
     const formatter = kernel.getFormatter(fmt);
     if (formatter) {
@@ -347,36 +302,7 @@ async function main(): Promise<void> {
 
   if (args.watch) {
     console.log(`Watching ${config.root} for changes...`);
-    const kernel = createKernel(config);
-
-    for (const plugin of getCorePlugins()) {
-      kernel.use(plugin);
-    }
-
-    const extensions = new Set<string>();
-    const scannedFiles = scanDirectory(config.root, {
-      ignorePatterns: config.ignore ? [...config.ignore] : [],
-    });
-    for (const file of scannedFiles) {
-      extensions.add('.' + file.relativePath.split('.').pop());
-    }
-    for (const plugin of autoDetectPlugins(extensions)) {
-      if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
-        kernel.use(plugin);
-      }
-    }
-    const formats = Array.isArray(config.format) ? config.format : [config.format];
-    for (const plugin of getFormatterPlugins(formats)) {
-      if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
-        kernel.use(plugin);
-      }
-    }
-    for (const plugin of getFeaturePlugins(config)) {
-      if (!kernel.listPlugins().some((p) => p.name === plugin.name)) {
-        kernel.use(plugin);
-      }
-    }
-
+    const kernel = setupKernel(config);
     const watcher = createFileWatcher(kernel, config, args.debounce ?? 300);
 
     watcher.on('change', (event) => {

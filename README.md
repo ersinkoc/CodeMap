@@ -4,6 +4,8 @@ AST-based codebase structure extractor for token-efficient LLM navigation.
 
 Scans your codebase and produces a compact structural map — function signatures, class hierarchies, type definitions, dependency graphs — that fits into an LLM's context window at **10-25x fewer tokens** than reading raw source files.
 
+**v0.1.0** adds deep code analysis: reverse dependencies, circular dependency detection, orphan file detection, and unused export analysis.
+
 ## Install
 
 ```bash
@@ -23,6 +25,12 @@ console.log(map.output);
 //   ◆ UserService ← BaseService
 //     .async getById(id: string) → Promise<User>
 //   ◇ User { id: string, name: string }
+//
+// ## REVERSE DEPS (who imports me?)
+//   services/user.ts ← routes/api.ts, controllers/auth.ts
+//
+// ## UNUSED EXPORTS
+//   ⚠ utils/legacy.ts: oldHelper, deprecatedFn
 ```
 
 ## Features
@@ -36,7 +44,15 @@ console.log(map.output);
 - **Monorepo Support** — pnpm/yarn/npm/turborepo workspaces
 - **CLAUDE.md Integration** — Auto-inject map for AI coding assistants
 - **Git Hooks** — Pre-commit auto-generation
-- **Complexity Scoring** — Cyclomatic complexity per function
+- **Complexity Scoring** — Cyclomatic complexity per file
+
+### Code Analysis (v0.1.0)
+
+- **Reverse Dependencies** — See who imports each file (`kernel.ts ← builder.ts, cli.ts`)
+- **Circular Dependencies** — Detect dependency cycles (`A → B → C → A`)
+- **Orphan Files** — Find dead modules not imported by anyone
+- **Unused Exports** — Find exported symbols never imported in the project
+- **Entry Points** — Auto-detect from `package.json` (`main`, `bin`, `exports`)
 
 ## Usage
 
@@ -54,6 +70,13 @@ const map = await scan('./src', {
   incremental: true,
   complexity: true,
 });
+
+// Access analysis results
+if (map.analysis) {
+  console.log('Circular deps:', map.analysis.circularDeps);
+  console.log('Orphan files:', map.analysis.orphanFiles);
+  console.log('Unused exports:', map.analysis.unusedExports);
+}
 ```
 
 ### Builder API
@@ -105,6 +128,9 @@ npx @oxog/codemap --watch --debounce=500
 # Incremental scan
 npx @oxog/codemap --incremental
 
+# Enable complexity scoring
+npx @oxog/codemap --complexity
+
 # Inject into CLAUDE.md
 npx @oxog/codemap inject
 
@@ -142,6 +168,54 @@ const kotlinPlugin = createPlugin({
 const map = await codemap().use(kotlinPlugin).scan();
 ```
 
+## Output Example
+
+```
+# CODEMAP — ./src
+# Generated: 2026-03-14 | Files: 39 | LOC: 6,869 | ~73,615 tokens
+
+## EXTERNAL DEPS
+  node:path: resolve, join, extname, relative
+  node:fs: existsSync, readFileSync, writeFileSync, ...
+
+## FILES
+
+━━ kernel.ts (247L) [~2,667T]
+  ƒ createKernel(config: CodemapConfig) → Kernel
+  ƒ setupKernel(config: CodemapConfig, extraPlugins?: readonly CodemapPlugin[]) → Kernel
+  ◆ Kernel ⊳ CodemapKernel<CodemapContext> (295L)
+    .use(plugin: CodemapPlugin)
+    .async scan() → Promise<ScanResult>
+    .registerParser(parser: LanguageParser)
+    .getFormatter(name: string) → OutputFormatter | undefined
+
+━━ scanner.ts (111L) [~1,204T]
+  ƒ scanDirectory() → ScannedFile[]
+  ƒ readIgnoreFile(dir: string) → string[]
+
+## DEPENDENCY GRAPH
+  kernel.ts → ./errors.js, ./scanner.js, ./token-estimator.js
+  scanner.ts → ./utils/glob-matcher.js, ./language-map.js
+
+## ENTRY POINTS
+  ▶ index.ts
+  ▶ cli.ts
+
+## REVERSE DEPS (who imports me?)
+  kernel.ts ← builder.ts, cli.ts, index.ts, watcher.ts
+  scanner.ts ← kernel.ts, plugins/optional/ignore.ts
+  types.ts ← builder.ts, cli.ts, config.ts, kernel.ts, ...
+
+## CIRCULAR DEPS
+  ⟳ a.ts → b.ts → c.ts → a.ts
+
+## ORPHAN FILES (not imported by anyone)
+  ⚠ utils/deprecated.ts
+
+## UNUSED EXPORTS (exported but never imported)
+  ⚠ utils/helpers.ts: oldFunction, legacyHelper
+```
+
 ## Output Formats
 
 | Format | Use Case | Token Efficiency |
@@ -159,6 +233,7 @@ const map = await codemap().use(kotlinPlugin).scan();
 ⚛ Component      🪝 Hook          ✦ Struct
 Δ Trait           λ Method         ∂ Decorator
 ← extends         ⊳ implements    ↗ Re-export
+▶ Entry point     ⟳ Circular dep  ⚠ Warning
 ```
 
 ## Configuration
@@ -199,4 +274,4 @@ export default defineConfig({
 
 ## License
 
-MIT - [Ersin KOÇ](https://x.com/ersinkoc)
+MIT - [Ersin KOC](https://x.com/ersinkoc)

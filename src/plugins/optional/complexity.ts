@@ -1,12 +1,14 @@
 /**
  * Cyclomatic complexity scoring plugin.
  *
- * Calculates complexity per function/method using heuristic counting
- * of branching keywords.
+ * Calculates complexity per file using heuristic counting
+ * of branching keywords on actual source code.
  * @module
  */
 
-import type { CodemapPlugin, ScanResult, FileAnalysis, FunctionInfo } from '../../types.js';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import type { CodemapPlugin, ScanResult, FileAnalysis } from '../../types.js';
 
 /** Keywords that increase cyclomatic complexity */
 const COMPLEXITY_KEYWORDS = [
@@ -56,29 +58,16 @@ export function calculateComplexity(code: string): number {
 }
 
 /**
- * Calculate average complexity for a file's functions.
+ * Calculate complexity for a file by reading its actual source code.
  */
-function calculateFileComplexity(file: FileAnalysis): number {
-  const allFunctions: FunctionInfo[] = [
-    ...file.functions,
-    ...file.classes.flatMap((c) => c.methods),
-  ];
-
-  if (file.components) {
-    allFunctions.push(...file.components);
+function calculateFileComplexityFromSource(rootDir: string, file: FileAnalysis): number {
+  try {
+    const absPath = join(rootDir, file.path);
+    const content = readFileSync(absPath, 'utf-8');
+    return calculateComplexity(content);
+  } catch {
+    return 1;
   }
-  if (file.hooks) {
-    allFunctions.push(...file.hooks);
-  }
-
-  if (allFunctions.length === 0) return 1;
-
-  const totalComplexity = allFunctions.reduce(
-    (sum, fn) => sum + (fn.complexity ?? 1),
-    0,
-  );
-
-  return Math.round(totalComplexity / allFunctions.length);
 }
 
 /**
@@ -92,10 +81,10 @@ export function createComplexityPlugin(): CodemapPlugin {
       // No kernel registration needed
     },
     async onScanComplete(result: ScanResult) {
-      // Add complexity scores to files
+      // Add complexity scores by reading actual source files
       for (const file of result.files) {
         const mutableFile = file as { complexity?: number };
-        mutableFile.complexity = calculateFileComplexity(file);
+        mutableFile.complexity = calculateFileComplexityFromSource(result.root, file);
       }
     },
   };
