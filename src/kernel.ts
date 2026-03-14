@@ -55,7 +55,7 @@ export function setupKernel(
   config: CodemapConfig,
   extraPlugins: readonly CodemapPlugin[] = [],
 ): Kernel {
-  const kernel = new Kernel(config);
+  const kernel = createKernel(config);
 
   // 1. Core plugins (TypeScript parser + compact formatter)
   for (const plugin of getCorePlugins()) {

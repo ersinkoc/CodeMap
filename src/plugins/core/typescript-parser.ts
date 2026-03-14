@@ -297,17 +297,23 @@ function parseTypeScript(content: string, filePath: string): FileAnalysis {
       continue;
     }
 
-    // ─── Constants (non-function) ─────────────────────────
-    const constMatch = trimmed.match(
-      /^(export\s+)?(const|let|var)\s+(\w+)\s*(?::\s*(.+?))?\s*=\s*(?!.*(?:=>|\bfunction\b))/,
-    );
-    if (constMatch && !trimmed.includes('=>') && !trimmed.includes('function')) {
-      constants.push({
-        name: constMatch[3]!,
-        type: constMatch[4] ? truncateType(simplifyType(constMatch[4])) : 'unknown',
-        exported: !!constMatch[1],
-      });
-      continue;
+    // ─── Constants (non-function, top-level only) ──────────
+    // Only match top-level constants (no leading whitespace in original line)
+    // to avoid capturing local variables inside function bodies.
+    const originalLine = rawLines[i]!;
+    const indent = originalLine.length - originalLine.trimStart().length;
+    if (indent === 0) {
+      const constMatch = trimmed.match(
+        /^(export\s+)?(const|let|var)\s+(\w+)\s*(?::\s*(.+?))?\s*=\s*(?!.*(?:=>|\bfunction\b))/,
+      );
+      if (constMatch && !trimmed.includes('=>') && !trimmed.includes('function')) {
+        constants.push({
+          name: constMatch[3]!,
+          type: constMatch[4] ? truncateType(simplifyType(constMatch[4])) : 'unknown',
+          exported: !!constMatch[1],
+        });
+        continue;
+      }
     }
 
     // ─── Named exports ───────────────────────────────────

@@ -24,8 +24,6 @@ import { createClaudeMdPlugin } from './optional/claude-md.js';
 import { createMonorepoPlugin } from './optional/monorepo.js';
 import { createCodeAnalysisPlugin } from './optional/code-analysis.js';
 
-export { EXTENSION_LANGUAGE_MAP };
-
 /** Language to parser plugin factory mapping */
 const LANGUAGE_PLUGIN_MAP: Record<LanguageId, () => CodemapPlugin> = {
   typescript: createTypescriptParserPlugin,

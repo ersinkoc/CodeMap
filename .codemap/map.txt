@@ -1,5 +1,5 @@
 # CODEMAP — D:\Codebox\__NPM__\CodeMap\src
-# Generated: 2026-03-14 | Files: 39 | LOC: 6,869 | ~73,615 tokens
+# Generated: 2026-03-14 | Files: 39 | LOC: 6,872 | ~73,694 tokens
 
 ## EXTERNAL DEPS
   node:path: resolve, join, dirname, extname, relative
@@ -120,14 +120,13 @@
   ƒ formatEntryPoints(analysis: CodeAnalysis) → string
   ƒ formatCompact(result: ScanResult, _options?: Record<string, unknown>) → string
   ƒ createCompactFormatterPlugin() → CodemapPlugin
-  κ opt
   κ compactFormatter: OutputFormatter
 
 ━━ plugins/core/index.ts (3L) [~65T]
   ↗ createTypescriptParserPlugin from ./typescript-parser.js
   ↗ createCompactFormatterPlugin, formatCompact from ./compact-formatter.js
 
-━━ plugins/core/typescript-parser.ts (616L) [~6,166T]
+━━ plugins/core/typescript-parser.ts (620L) [~6,255T]
   ƒ parseTypeScript(content: string, filePath: string) → FileAnalysis
 
 ━━ plugins/index.ts (25L) [~511T]
@@ -195,14 +194,6 @@
   ƒ parseGoReturnType(returnStr: string) → string
   ƒ extractInterfaceMethods(bodyLines: readonly string[]) → {
   ƒ parseGo(content: string, filePath: string) → FileAnalysis
-  κ methods: FunctionInfo[]
-  κ embeds: string[]
-  κ trimmed
-  κ methodMatch
-  κ name
-  κ paramsStr
-  κ returnStr
-  κ embedMatch
 
 ━━ plugins/optional/ignore.ts (17L) [~256T]
   ƒ createIgnorePlugin() → CodemapPlugin
@@ -283,13 +274,12 @@
 ━━ plugins/optional/rust-parser.ts (473L) [~4,653T]
   ƒ parseRust(content: string, filePath: string) → FileAnalysis
 
-━━ plugins/registry.ts (102L) [~1,209T]
+━━ plugins/registry.ts (101L) [~1,199T]
   ƒ getCorePlugins() → CodemapPlugin[]
   ƒ getParserPlugin(language: LanguageId) → CodemapPlugin
   ƒ autoDetectPlugins(extensions: Set<string>) → CodemapPlugin[]
   ƒ getFormatterPlugins(formats: readonly string[]) → CodemapPlugin[]
   ƒ getFeaturePlugins()
-  κ plugins: CodemapPlugin[]
 
 ━━ scanner.ts (97L) [~1,123T]
   ƒ getLanguageForExtension(ext: string) → string | undefined
@@ -298,8 +288,6 @@
   ƒ walk(dir: string)
   ƒ readIgnoreFile(dir: string) → string[]
   ◇ ScannedFile { absolutePath: string, relativePath: string, language: string, content: string }
-  κ allPatterns
-  κ files: ScannedFile[]
 
 ━━ token-estimator.ts (37L) [~594T]
   ƒ estimateTokens(content: string, language?: LanguageId | string) → number
@@ -481,6 +469,6 @@
 
 ## UNUSED EXPORTS (exported but never imported)
   ⚠ kernel.ts: createKernel
-  ⚠ plugins/registry.ts: getParserPlugin, EXTENSION_LANGUAGE_MAP
+  ⚠ plugins/registry.ts: getParserPlugin
   ⚠ scanner.ts: getLanguageForExtension, getSupportedExtensions, ScannedFile
   ⚠ token-estimator.ts: estimateOutputTokens
