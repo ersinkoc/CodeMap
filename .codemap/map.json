@@ -1,0 +1,6571 @@
+{
+  "root": "D:\\Codebox\\__NPM__\\CodeMap\\src",
+  "timestamp": "2026-03-14T11:57:53.336Z",
+  "stats": {
+    "fileCount": 37,
+    "totalLoc": 6440,
+    "totalTokens": 69152,
+    "languageBreakdown": {
+      "typescript": 37
+    },
+    "scanDurationMs": 19,
+    "incremental": false
+  },
+  "externalDeps": {
+    "node:path": [
+      "resolve",
+      "join",
+      "extname",
+      "relative"
+    ],
+    "node:fs": [
+      "existsSync",
+      "mkdirSync",
+      "writeFileSync",
+      "readFileSync",
+      "readdirSync",
+      "statSync",
+      "unlinkSync",
+      "chmodSync",
+      "watch",
+      "type FSWatcher"
+    ],
+    "node:child_process": [
+      "execFileSync"
+    ]
+  },
+  "files": [
+    {
+      "path": "builder.ts",
+      "language": "typescript",
+      "loc": 149,
+      "estimatedTokens": 1461,
+      "imports": [
+        {
+          "from": "node:path",
+          "names": [
+            "resolve"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./config.js",
+          "names": [
+            "DEFAULT_CONFIG",
+            "loadConfig"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./kernel.js",
+          "names": [
+            "createKernel",
+            "Kernel"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./scanner.js",
+          "names": [
+            "scanDirectory"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./watcher.js",
+          "names": [
+            "createFileWatcher"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [],
+      "classes": [
+        {
+          "name": "CodemapBuilder",
+          "methods": [
+            {
+              "name": "root",
+              "params": [
+                {
+                  "name": "path",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "returnType": "this",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            },
+            {
+              "name": "format",
+              "params": [
+                {
+                  "name": "type",
+                  "type": "FormatType | FormatType[]",
+                  "optional": false
+                }
+              ],
+              "returnType": "this",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            },
+            {
+              "name": "ignore",
+              "params": [
+                {
+                  "name": "...patterns",
+                  "type": "string[]",
+                  "optional": false
+                }
+              ],
+              "returnType": "this",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            },
+            {
+              "name": "languages",
+              "params": [
+                {
+                  "name": "langs",
+                  "type": "LanguageId[]",
+                  "optional": false
+                }
+              ],
+              "returnType": "this",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            },
+            {
+              "name": "incremental",
+              "params": [],
+              "returnType": "this",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            },
+            {
+              "name": "withComplexity",
+              "params": [],
+              "returnType": "this",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            },
+            {
+              "name": "withTokenCounts",
+              "params": [],
+              "returnType": "this",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            },
+            {
+              "name": "monorepo",
+              "params": [],
+              "returnType": "this",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            },
+            {
+              "name": "debounce",
+              "params": [
+                {
+                  "name": "ms",
+                  "type": "number",
+                  "optional": false
+                }
+              ],
+              "returnType": "this",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            },
+            {
+              "name": "use",
+              "params": [
+                {
+                  "name": "plugin",
+                  "type": "CodemapPlugin",
+                  "optional": false
+                }
+              ],
+              "returnType": "this",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            },
+            {
+              "name": "scan",
+              "params": [],
+              "returnType": "Promise<ScanResult>",
+              "exported": true,
+              "async": true,
+              "static": false,
+              "scope": "public",
+              "loc": 5
+            },
+            {
+              "name": "watch",
+              "params": [],
+              "returnType": "CodemapWatcher",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 6
+            },
+            {
+              "name": "buildConfig",
+              "params": [],
+              "returnType": "CodemapConfig",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "private",
+              "loc": 14
+            },
+            {
+              "name": "buildKernel",
+              "params": [
+                {
+                  "name": "config",
+                  "type": "CodemapConfig",
+                  "optional": false
+                }
+              ],
+              "returnType": "Kernel",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "private",
+              "loc": 48
+            }
+          ],
+          "properties": [
+            {
+              "name": "_root",
+              "type": "string =",
+              "scope": "private",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "_format",
+              "type": "FormatType[]=[]",
+              "scope": "private",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "_ignore",
+              "type": "string[]=[]",
+              "scope": "private",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "_languages",
+              "type": "LanguageId[]",
+              "scope": "private",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "_plugins",
+              "type": "CodemapPlugin[]=[]",
+              "scope": "private",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "format",
+              "type": "this._format.length === 1 ? this._format[0]! : this._format",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "languages",
+              "type": "this._languages",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "ignore",
+              "type": "this._ignore.length>0 ? this._ignore : undefined",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "incremental",
+              "type": "this._incremental",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "complexity",
+              "type": "this._complexity",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "tokenCounts",
+              "type": "this._tokenCounts",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "monorepo",
+              "type": "this._monorepo",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "watch",
+              "type": "{debounce: this._debounce}",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "ignorePatterns",
+              "type": "config.ignore ?[...config.ignore]:[]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "languages",
+              "type": "config.languages as string[]| undefined",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            }
+          ],
+          "exported": true,
+          "abstract": false,
+          "loc": 181
+        }
+      ],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "cli.ts",
+      "language": "typescript",
+      "loc": 329,
+      "estimatedTokens": 3347,
+      "imports": [
+        {
+          "from": "node:path",
+          "names": [
+            "resolve",
+            "join"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "node:fs",
+          "names": [
+            "existsSync",
+            "mkdirSync",
+            "writeFileSync",
+            "readFileSync"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./config.js",
+          "names": [
+            "loadConfig",
+            "parseFormatString",
+            "DEFAULT_CONFIG"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./kernel.js",
+          "names": [
+            "createKernel"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./scanner.js",
+          "names": [
+            "scanDirectory"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./plugins/optional/git-hooks.js",
+          "names": [
+            "installHook",
+            "uninstallHook"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./plugins/optional/claude-md.js",
+          "names": [
+            "injectIntoClaudeMd"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./watcher.js",
+          "names": [
+            "createFileWatcher"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./types.js",
+          "names": [
+            "CodemapConfig",
+            "FormatType",
+            "ScanResult"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "parseArgs",
+          "params": [
+            {
+              "name": "argv",
+              "type": "string[]",
+              "optional": false
+            }
+          ],
+          "returnType": "CliArgs",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 49
+        },
+        {
+          "name": "printHelp",
+          "params": [],
+          "returnType": "void",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 27
+        },
+        {
+          "name": "getVersion",
+          "params": [],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 19
+        },
+        {
+          "name": "runScan",
+          "params": [
+            {
+              "name": "config",
+              "type": "CodemapConfig",
+              "optional": false
+            }
+          ],
+          "returnType": "Promise<ScanResult>",
+          "exported": false,
+          "async": true,
+          "generator": false,
+          "loc": 65
+        },
+        {
+          "name": "runInit",
+          "params": [
+            {
+              "name": "cwd",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "void",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 40
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "async": true,
+          "generator": false,
+          "loc": 142
+        }
+      ],
+      "classes": [],
+      "interfaces": [
+        {
+          "name": "CliArgs",
+          "properties": [
+            {
+              "name": "root",
+              "type": "string",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "format",
+              "type": "string",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "watch",
+              "type": "boolean",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "incremental",
+              "type": "boolean",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "full",
+              "type": "boolean",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "debounce",
+              "type": "number",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "complexity",
+              "type": "boolean",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "monorepo",
+              "type": "boolean",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "command",
+              "type": "string",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "subcommand",
+              "type": "string",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "boolean",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": false
+        }
+      ],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "config.ts",
+      "language": "typescript",
+      "loc": 137,
+      "estimatedTokens": 1580,
+      "imports": [
+        {
+          "from": "node:fs",
+          "names": [
+            "existsSync",
+            "readFileSync"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "node:path",
+          "names": [
+            "join",
+            "resolve"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./types.js",
+          "names": [
+            "CodemapConfig",
+            "FormatType",
+            "ScanOptions"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        },
+        {
+          "from": "./errors.js",
+          "names": [
+            "ConfigError"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "defineConfig",
+          "params": [
+            {
+              "name": "config",
+              "type": "Partial<CodemapConfig>",
+              "optional": false
+            }
+          ],
+          "returnType": "Partial<CodemapConfig>",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 4
+        },
+        {
+          "name": "loadConfig",
+          "params": [
+            {
+              "name": "cwd",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "overrides",
+              "type": "Partial<CodemapConfig>",
+              "optional": true
+            }
+          ],
+          "returnType": "CodemapConfig",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 27
+        },
+        {
+          "name": "scanOptionsToConfig",
+          "params": [
+            {
+              "name": "root",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "ScanOptions",
+              "optional": true
+            }
+          ],
+          "returnType": "Partial<CodemapConfig>",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 15
+        },
+        {
+          "name": "validateConfig",
+          "params": [
+            {
+              "name": "config",
+              "type": "Partial<CodemapConfig>",
+              "optional": false
+            }
+          ],
+          "returnType": "void",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 20
+        },
+        {
+          "name": "loadRcConfig",
+          "params": [
+            {
+              "name": "cwd",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "Partial<CodemapConfig>",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 11
+        },
+        {
+          "name": "loadPackageJsonConfig",
+          "params": [
+            {
+              "name": "cwd",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "Partial<CodemapConfig>",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 16
+        },
+        {
+          "name": "loadConfigFile",
+          "params": [
+            {
+              "name": "cwd",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "Partial<CodemapConfig>",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 18
+        },
+        {
+          "name": "parseFormatString",
+          "params": [
+            {
+              "name": "formatStr",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "FormatType[]",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 6
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "DEFAULT_CONFIG",
+          "type": "CodemapConfig",
+          "exported": true
+        },
+        {
+          "name": "VALID_FORMATS",
+          "type": "unknown",
+          "exported": false
+        },
+        {
+          "name": "VALID_LANGUAGES",
+          "type": "unknown",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "errors.ts",
+      "language": "typescript",
+      "loc": 50,
+      "estimatedTokens": 657,
+      "imports": [],
+      "exports": [],
+      "functions": [],
+      "classes": [
+        {
+          "name": "CodemapError",
+          "extends": "Error",
+          "methods": [
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 9
+            }
+          ],
+          "properties": [
+            {
+              "name": "message",
+              "type": "string",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "code",
+              "type": "string",
+              "scope": "public",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "context",
+              "type": "Record<string, unknown>",
+              "scope": "public",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "exported": true,
+          "abstract": false,
+          "loc": 11
+        },
+        {
+          "name": "ParserError",
+          "extends": "CodemapError",
+          "methods": [
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "context",
+                  "type": "Record<string, unknown>",
+                  "optional": true
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 9
+            }
+          ],
+          "properties": [
+            {
+              "name": "message",
+              "type": "string",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "scope": "public",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "language",
+              "type": "string",
+              "scope": "public",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "context",
+              "type": "Record<string, unknown>",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            }
+          ],
+          "exported": true,
+          "abstract": false,
+          "loc": 11
+        },
+        {
+          "name": "ConfigError",
+          "extends": "CodemapError",
+          "methods": [
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "context",
+                  "type": "Record<string, unknown>",
+                  "optional": true
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            }
+          ],
+          "properties": [],
+          "exported": true,
+          "abstract": false,
+          "loc": 6
+        },
+        {
+          "name": "PluginError",
+          "extends": "CodemapError",
+          "methods": [
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "context",
+                  "type": "Record<string, unknown>",
+                  "optional": true
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 8
+            }
+          ],
+          "properties": [
+            {
+              "name": "message",
+              "type": "string",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "pluginName",
+              "type": "string",
+              "scope": "public",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "context",
+              "type": "Record<string, unknown>",
+              "static": false,
+              "readonly": false,
+              "optional": true
+            }
+          ],
+          "exported": true,
+          "abstract": false,
+          "loc": 10
+        },
+        {
+          "name": "ScanError",
+          "extends": "CodemapError",
+          "methods": [
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "context",
+                  "type": "Record<string, unknown>",
+                  "optional": true
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 4
+            }
+          ],
+          "properties": [],
+          "exported": true,
+          "abstract": false,
+          "loc": 6
+        }
+      ],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "index.ts",
+      "language": "typescript",
+      "loc": 106,
+      "estimatedTokens": 1617,
+      "imports": [
+        {
+          "from": "node:path",
+          "names": [
+            "resolve"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./config.js",
+          "names": [
+            "loadConfig",
+            "scanOptionsToConfig"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./builder.js",
+          "names": [
+            "CodemapBuilder"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./kernel.js",
+          "names": [
+            "createKernel"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./scanner.js",
+          "names": [
+            "scanDirectory"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [
+        {
+          "from": "./config.js",
+          "names": [
+            "defineConfig"
+          ],
+          "isReExport": true
+        }
+      ],
+      "functions": [
+        {
+          "name": "scan",
+          "params": [
+            {
+              "name": "root",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "options",
+              "type": "ScanOptions",
+              "optional": true
+            }
+          ],
+          "returnType": "Promise<ScanResult>",
+          "exported": true,
+          "async": true,
+          "generator": false,
+          "loc": 46
+        },
+        {
+          "name": "codemap",
+          "params": [],
+          "returnType": "CodemapBuilder",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        },
+        {
+          "name": "createPlugin",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 5
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "kernel.ts",
+      "language": "typescript",
+      "loc": 247,
+      "estimatedTokens": 2667,
+      "imports": [
+        {
+          "from": "./errors.js",
+          "names": [
+            "PluginError",
+            "ScanError"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./scanner.js",
+          "names": [
+            "scanDirectory",
+            "readIgnoreFile"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./token-estimator.js",
+          "names": [
+            "estimateTokens",
+            "countLoc"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "createKernel",
+          "params": [
+            {
+              "name": "config",
+              "type": "CodemapConfig",
+              "optional": false
+            }
+          ],
+          "returnType": "Kernel",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "Kernel",
+          "implements": [
+            "CodemapKernel<CodemapContext>"
+          ],
+          "methods": [
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "config",
+                  "type": "CodemapConfig",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 3
+            },
+            {
+              "name": "use",
+              "params": [
+                {
+                  "name": "plugin",
+                  "type": "CodemapPlugin",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 37
+            },
+            {
+              "name": "unregister",
+              "params": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "returnType": "Promise<void>",
+              "exported": true,
+              "async": true,
+              "static": false,
+              "scope": "public",
+              "loc": 11
+            },
+            {
+              "name": "listPlugins",
+              "params": [],
+              "returnType": "readonly CodemapPlugin[]",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 3
+            },
+            {
+              "name": "registerParser",
+              "params": [
+                {
+                  "name": "parser",
+                  "type": "LanguageParser",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 6
+            },
+            {
+              "name": "getParser",
+              "params": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "returnType": "LanguageParser | undefined",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 3
+            },
+            {
+              "name": "getParserForExtension",
+              "params": [
+                {
+                  "name": "ext",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "returnType": "LanguageParser | undefined",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 3
+            },
+            {
+              "name": "listParsers",
+              "params": [],
+              "returnType": "readonly LanguageParser[]",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 3
+            },
+            {
+              "name": "registerFormatter",
+              "params": [
+                {
+                  "name": "formatter",
+                  "type": "OutputFormatter",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 3
+            },
+            {
+              "name": "getFormatter",
+              "params": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "returnType": "OutputFormatter | undefined",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 3
+            },
+            {
+              "name": "listFormatters",
+              "params": [],
+              "returnType": "readonly OutputFormatter[]",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 3
+            },
+            {
+              "name": "emit",
+              "params": [
+                {
+                  "name": "event",
+                  "type": "KernelEvent",
+                  "optional": false
+                },
+                {
+                  "name": "...args",
+                  "type": "unknown[]",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 12
+            },
+            {
+              "name": "on",
+              "params": [
+                {
+                  "name": "event",
+                  "type": "KernelEvent",
+                  "optional": false
+                },
+                {
+                  "name": "listener",
+                  "type": "EventListener",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 8
+            },
+            {
+              "name": "off",
+              "params": [
+                {
+                  "name": "event",
+                  "type": "KernelEvent",
+                  "optional": false
+                },
+                {
+                  "name": "listener",
+                  "type": "EventListener",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 6
+            },
+            {
+              "name": "getConfig",
+              "params": [],
+              "returnType": "CodemapConfig",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 3
+            },
+            {
+              "name": "updateConfig",
+              "params": [
+                {
+                  "name": "config",
+                  "type": "CodemapConfig",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "async": false,
+              "static": false,
+              "scope": "public",
+              "loc": 3
+            },
+            {
+              "name": "scan",
+              "params": [],
+              "returnType": "Promise<ScanResult>",
+              "exported": true,
+              "async": true,
+              "static": false,
+              "scope": "public",
+              "loc": 136
+            }
+          ],
+          "properties": [
+            {
+              "name": "_config",
+              "type": "CodemapConfig",
+              "scope": "private",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "ignorePatterns",
+              "type": "[...ignorePatterns, ...extraIgnore]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "languages",
+              "type": "config.languages as string[]| undefined",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "root",
+              "type": "config.root",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "files",
+              "type": "[]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "dependencyGraph",
+              "type": "{}",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "externalDeps",
+              "type": "{}",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "path",
+              "type": "file.relativePath",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "language",
+              "type": "file.language as FileAnalysis[]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "imports",
+              "type": "[]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "exports",
+              "type": "[]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "functions",
+              "type": "[]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "classes",
+              "type": "[]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "interfaces",
+              "type": "[]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "types",
+              "type": "[]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "enums",
+              "type": "[]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "constants",
+              "type": "[]",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "fileCount",
+              "type": "context.files.length",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "incremental",
+              "type": "false",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "root",
+              "type": "config.root",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "files",
+              "type": "context.files",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "dependencyGraph",
+              "type": "context.dependencyGraph",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "externalDeps",
+              "type": "context.externalDeps",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            }
+          ],
+          "exported": true,
+          "abstract": false,
+          "loc": 295
+        }
+      ],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "plugins/core/compact-formatter.ts",
+      "language": "typescript",
+      "loc": 286,
+      "estimatedTokens": 3205,
+      "imports": [],
+      "exports": [],
+      "functions": [
+        {
+          "name": "fmtNum",
+          "params": [
+            {
+              "name": "n",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        },
+        {
+          "name": "fmtParams",
+          "params": [
+            {
+              "name": "params",
+              "type": "readonly{name: string;type: string;optional?: boolean | undefined}[]",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 1
+        },
+        {
+          "name": "fmtReturn",
+          "params": [
+            {
+              "name": "returnType",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 4
+        },
+        {
+          "name": "fmtDecorators",
+          "params": [
+            {
+              "name": "decorators",
+              "type": "readonly string[]",
+              "optional": true
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 4
+        },
+        {
+          "name": "fmtFunction",
+          "params": [
+            {
+              "name": "fn",
+              "type": "FunctionInfo",
+              "optional": false
+            },
+            {
+              "name": "indent",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "symbol",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 12
+        },
+        {
+          "name": "formatHeader",
+          "params": [
+            {
+              "name": "result",
+              "type": "ScanResult",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 12
+        },
+        {
+          "name": "formatExternalDeps",
+          "params": [
+            {
+              "name": "externalDeps",
+              "type": "Readonly<Record<string, readonly string[]>>",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 12
+        },
+        {
+          "name": "formatFunctions",
+          "params": [
+            {
+              "name": "functions",
+              "type": "readonly FunctionInfo[]",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 7
+        },
+        {
+          "name": "formatClasses",
+          "params": [
+            {
+              "name": "classes",
+              "type": "readonly ClassInfo[]",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 24
+        },
+        {
+          "name": "formatInterfaces",
+          "params": [
+            {
+              "name": "interfaces",
+              "type": "readonly InterfaceInfo[]",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 30
+        },
+        {
+          "name": "formatTypes",
+          "params": [
+            {
+              "name": "types",
+              "type": "readonly TypeInfo[]",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        },
+        {
+          "name": "formatEnums",
+          "params": [
+            {
+              "name": "enums",
+              "type": "readonly EnumInfo[]",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        },
+        {
+          "name": "formatConstants",
+          "params": [
+            {
+              "name": "constants",
+              "type": "readonly ConstantInfo[]",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 6
+        },
+        {
+          "name": "formatComponents",
+          "params": [
+            {
+              "name": "components",
+              "type": "readonly ComponentInfo[]",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 7
+        },
+        {
+          "name": "formatHooks",
+          "params": [
+            {
+              "name": "hooks",
+              "type": "readonly HookInfo[]",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 7
+        },
+        {
+          "name": "formatStructs",
+          "params": [
+            {
+              "name": "structs",
+              "type": "readonly StructInfo[]",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 20
+        },
+        {
+          "name": "formatTraits",
+          "params": [
+            {
+              "name": "traits",
+              "type": "readonly TraitInfo[]",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 17
+        },
+        {
+          "name": "formatReExports",
+          "params": [
+            {
+              "name": "file",
+              "type": "FileAnalysis",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 9
+        },
+        {
+          "name": "formatPackages",
+          "params": [
+            {
+              "name": "file",
+              "type": "FileAnalysis",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 4
+        },
+        {
+          "name": "formatFile",
+          "params": [
+            {
+              "name": "file",
+              "type": "FileAnalysis",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 70
+        },
+        {
+          "name": "formatDependencyGraph",
+          "params": [
+            {
+              "name": "graph",
+              "type": "Readonly<Record<string, readonly string[]>>",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 14
+        },
+        {
+          "name": "formatCompact",
+          "params": [
+            {
+              "name": "result",
+              "type": "ScanResult",
+              "optional": false
+            },
+            {
+              "name": "_options",
+              "type": "Record<string, unknown>",
+              "optional": true
+            }
+          ],
+          "returnType": "string",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 30
+        },
+        {
+          "name": "createCompactFormatterPlugin",
+          "params": [],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 9
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "opt",
+          "type": "unknown",
+          "exported": false
+        },
+        {
+          "name": "compactFormatter",
+          "type": "OutputFormatter",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "plugins/core/index.ts",
+      "language": "typescript",
+      "loc": 3,
+      "estimatedTokens": 65,
+      "imports": [],
+      "exports": [
+        {
+          "from": "./typescript-parser.js",
+          "names": [
+            "createTypescriptParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./compact-formatter.js",
+          "names": [
+            "createCompactFormatterPlugin",
+            "formatCompact"
+          ],
+          "isReExport": true
+        }
+      ],
+      "functions": [],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "plugins/core/typescript-parser.ts",
+      "language": "typescript",
+      "loc": 576,
+      "estimatedTokens": 5753,
+      "imports": [
+        {
+          "from": "../../utils/comment-stripper.js",
+          "names": [
+            "stripComments"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/brace-counter.js",
+          "names": [
+            "findBlockEnd"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/type-truncator.js",
+          "names": [
+            "truncateType",
+            "simplifyType"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../token-estimator.js",
+          "names": [
+            "estimateTokens",
+            "countLoc"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "parseTypeScript",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "FileAnalysis",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 668
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "plugins/index.ts",
+      "language": "typescript",
+      "loc": 24,
+      "estimatedTokens": 487,
+      "imports": [],
+      "exports": [
+        {
+          "from": "./core/typescript-parser.js",
+          "names": [
+            "createTypescriptParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./core/compact-formatter.js",
+          "names": [
+            "createCompactFormatterPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/go-parser.js",
+          "names": [
+            "createGoParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/python-parser.js",
+          "names": [
+            "createPythonParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/rust-parser.js",
+          "names": [
+            "createRustParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/php-parser.js",
+          "names": [
+            "createPhpParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/java-parser.js",
+          "names": [
+            "createJavaParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/csharp-parser.js",
+          "names": [
+            "createCsharpParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/json-formatter.js",
+          "names": [
+            "createJsonFormatterPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/markdown-formatter.js",
+          "names": [
+            "createMarkdownFormatterPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/llms-txt-formatter.js",
+          "names": [
+            "createLlmsTxtFormatterPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/complexity.js",
+          "names": [
+            "createComplexityPlugin",
+            "calculateComplexity"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/ignore.js",
+          "names": [
+            "createIgnorePlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/incremental.js",
+          "names": [
+            "createIncrementalPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/git-hooks.js",
+          "names": [
+            "createGitHooksPlugin",
+            "installHook",
+            "uninstallHook"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/claude-md.js",
+          "names": [
+            "createClaudeMdPlugin",
+            "injectIntoClaudeMd"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./optional/monorepo.js",
+          "names": [
+            "createMonorepoPlugin",
+            "detectWorkspaces"
+          ],
+          "isReExport": true
+        }
+      ],
+      "functions": [],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "plugins/optional/claude-md.ts",
+      "language": "typescript",
+      "loc": 42,
+      "estimatedTokens": 563,
+      "imports": [
+        {
+          "from": "node:fs",
+          "names": [
+            "existsSync",
+            "readFileSync",
+            "writeFileSync"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "node:path",
+          "names": [
+            "join"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../types.js",
+          "names": [
+            "CodemapPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "injectIntoClaudeMd",
+          "params": [
+            {
+              "name": "dir",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "mapContent",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 25
+        },
+        {
+          "name": "buildInjection",
+          "params": [
+            {
+              "name": "mapContent",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 11
+        },
+        {
+          "name": "createClaudeMdPlugin",
+          "params": [],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 9
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "START_MARKER",
+          "type": "unknown",
+          "exported": false
+        },
+        {
+          "name": "END_MARKER",
+          "type": "unknown",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "plugins/optional/complexity.ts",
+      "language": "typescript",
+      "loc": 69,
+      "estimatedTokens": 771,
+      "imports": [
+        {
+          "from": "../../types.js",
+          "names": [
+            "CodemapPlugin",
+            "ScanResult",
+            "FileAnalysis",
+            "FunctionInfo"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "calculateComplexity",
+          "params": [
+            {
+              "name": "code",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "number",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 34
+        },
+        {
+          "name": "calculateFileComplexity",
+          "params": [
+            {
+              "name": "file",
+              "type": "FileAnalysis",
+              "optional": false
+            }
+          ],
+          "returnType": "number",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 22
+        },
+        {
+          "name": "createComplexityPlugin",
+          "params": [],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 16
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "COMPLEXITY_KEYWORDS",
+          "type": "unknown",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "plugins/optional/csharp-parser.ts",
+      "language": "typescript",
+      "loc": 617,
+      "estimatedTokens": 7133,
+      "imports": [
+        {
+          "from": "../../utils/comment-stripper.js",
+          "names": [
+            "stripComments"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/brace-counter.js",
+          "names": [
+            "findBlockEnd"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/type-truncator.js",
+          "names": [
+            "truncateType",
+            "simplifyType"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../token-estimator.js",
+          "names": [
+            "estimateTokens",
+            "countLoc"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "parseVisibility",
+          "params": [
+            {
+              "name": "raw",
+              "type": "string | undefined",
+              "optional": false
+            }
+          ],
+          "returnType": "CsharpVisibility | undefined",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 5
+        },
+        {
+          "name": "isExported",
+          "params": [
+            {
+              "name": "vis",
+              "type": "CsharpVisibility | undefined",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        },
+        {
+          "name": "parseCsharp",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "FileAnalysis",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 731
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [
+        {
+          "name": "CsharpVisibility",
+          "type": "'public' | 'protected' | 'private'",
+          "exported": false
+        }
+      ],
+      "enums": [],
+      "constants": [
+        {
+          "name": "CONTROL_KEYWORDS",
+          "type": "unknown",
+          "exported": false
+        },
+        {
+          "name": "MODIFIER_PATTERN",
+          "type": "unknown",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "plugins/optional/git-hooks.ts",
+      "language": "typescript",
+      "loc": 23,
+      "estimatedTokens": 299,
+      "imports": [
+        {
+          "from": "../../types.js",
+          "names": [
+            "CodemapPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        },
+        {
+          "from": "../../utils/git.js",
+          "names": [
+            "installPreCommitHook",
+            "uninstallPreCommitHook",
+            "isGitRepo"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "createGitHooksPlugin",
+          "params": [],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 9
+        },
+        {
+          "name": "installHook",
+          "params": [
+            {
+              "name": "dir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 6
+        },
+        {
+          "name": "uninstallHook",
+          "params": [
+            {
+              "name": "dir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "plugins/optional/go-parser.ts",
+      "language": "typescript",
+      "loc": 330,
+      "estimatedTokens": 3545,
+      "imports": [
+        {
+          "from": "../../utils/comment-stripper.js",
+          "names": [
+            "stripComments"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/brace-counter.js",
+          "names": [
+            "findBlockEnd"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/type-truncator.js",
+          "names": [
+            "truncateType",
+            "simplifyType"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../token-estimator.js",
+          "names": [
+            "estimateTokens",
+            "countLoc"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "isExported",
+          "params": [
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        },
+        {
+          "name": "parseGoParams",
+          "params": [
+            {
+              "name": "paramsStr",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "ParamInfo[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 68
+        },
+        {
+          "name": "parseGoReturnType",
+          "params": [
+            {
+              "name": "returnStr",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 51
+        },
+        {
+          "name": "extractInterfaceMethods",
+          "params": [
+            {
+              "name": "bodyLines",
+              "type": "readonly string[]",
+              "optional": false
+            }
+          ],
+          "returnType": "{",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 4
+        },
+        {
+          "name": "parseGo",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "FileAnalysis",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 235
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "methods",
+          "type": "FunctionInfo[]",
+          "exported": false
+        },
+        {
+          "name": "embeds",
+          "type": "string[]",
+          "exported": false
+        },
+        {
+          "name": "trimmed",
+          "type": "unknown",
+          "exported": false
+        },
+        {
+          "name": "methodMatch",
+          "type": "unknown",
+          "exported": false
+        },
+        {
+          "name": "name",
+          "type": "unknown",
+          "exported": false
+        },
+        {
+          "name": "paramsStr",
+          "type": "unknown",
+          "exported": false
+        },
+        {
+          "name": "returnStr",
+          "type": "unknown",
+          "exported": false
+        },
+        {
+          "name": "embedMatch",
+          "type": "unknown",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "plugins/optional/ignore.ts",
+      "language": "typescript",
+      "loc": 17,
+      "estimatedTokens": 256,
+      "imports": [
+        {
+          "from": "../../types.js",
+          "names": [
+            "CodemapPlugin",
+            "CodemapContext"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        },
+        {
+          "from": "../../scanner.js",
+          "names": [
+            "readIgnoreFile"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "createIgnorePlugin",
+          "params": [],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 17
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "plugins/optional/incremental.ts",
+      "language": "typescript",
+      "loc": 63,
+      "estimatedTokens": 642,
+      "imports": [
+        {
+          "from": "node:fs",
+          "names": [
+            "existsSync",
+            "readFileSync",
+            "writeFileSync",
+            "mkdirSync"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "node:path",
+          "names": [
+            "join"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../types.js",
+          "names": [
+            "CodemapPlugin",
+            "ScanResult"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        },
+        {
+          "from": "../../utils/git.js",
+          "names": [
+            "isGitAvailable",
+            "isGitRepo",
+            "getChangedFiles",
+            "hashContent"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "loadCache",
+          "params": [
+            {
+              "name": "outputDir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "CacheData | null",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 11
+        },
+        {
+          "name": "saveCache",
+          "params": [
+            {
+              "name": "outputDir",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "result",
+              "type": "ScanResult",
+              "optional": false
+            }
+          ],
+          "returnType": "void",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 20
+        },
+        {
+          "name": "getIncrementalFiles",
+          "params": [
+            {
+              "name": "rootDir",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "outputDir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]| null",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 12
+        },
+        {
+          "name": "createIncrementalPlugin",
+          "params": [],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 14
+        }
+      ],
+      "classes": [],
+      "interfaces": [
+        {
+          "name": "CacheData",
+          "properties": [
+            {
+              "name": "timestamp",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "files",
+              "type": "Record<string, string>",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": false
+        }
+      ],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "plugins/optional/index.ts",
+      "language": "typescript",
+      "loc": 16,
+      "estimatedTokens": 301,
+      "imports": [],
+      "exports": [
+        {
+          "from": "./go-parser.js",
+          "names": [
+            "createGoParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./python-parser.js",
+          "names": [
+            "createPythonParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./rust-parser.js",
+          "names": [
+            "createRustParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./php-parser.js",
+          "names": [
+            "createPhpParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./java-parser.js",
+          "names": [
+            "createJavaParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./csharp-parser.js",
+          "names": [
+            "createCsharpParserPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./json-formatter.js",
+          "names": [
+            "createJsonFormatterPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./markdown-formatter.js",
+          "names": [
+            "createMarkdownFormatterPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./llms-txt-formatter.js",
+          "names": [
+            "createLlmsTxtFormatterPlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./complexity.js",
+          "names": [
+            "createComplexityPlugin",
+            "calculateComplexity"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./ignore.js",
+          "names": [
+            "createIgnorePlugin"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./incremental.js",
+          "names": [
+            "createIncrementalPlugin",
+            "getIncrementalFiles"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./git-hooks.js",
+          "names": [
+            "createGitHooksPlugin",
+            "installHook",
+            "uninstallHook"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./claude-md.js",
+          "names": [
+            "createClaudeMdPlugin",
+            "injectIntoClaudeMd"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./monorepo.js",
+          "names": [
+            "createMonorepoPlugin",
+            "detectWorkspaces"
+          ],
+          "isReExport": true
+        }
+      ],
+      "functions": [],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "plugins/optional/java-parser.ts",
+      "language": "typescript",
+      "loc": 440,
+      "estimatedTokens": 4879,
+      "imports": [
+        {
+          "from": "../../utils/comment-stripper.js",
+          "names": [
+            "stripComments"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/brace-counter.js",
+          "names": [
+            "findBlockEnd"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/type-truncator.js",
+          "names": [
+            "truncateType",
+            "simplifyType"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../token-estimator.js",
+          "names": [
+            "estimateTokens",
+            "countLoc"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "parseVisibility",
+          "params": [
+            {
+              "name": "raw",
+              "type": "string | undefined",
+              "optional": false
+            }
+          ],
+          "returnType": "JavaVisibility | undefined",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 4
+        },
+        {
+          "name": "isExported",
+          "params": [
+            {
+              "name": "vis",
+              "type": "JavaVisibility | undefined",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        },
+        {
+          "name": "parseJava",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "FileAnalysis",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 524
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [
+        {
+          "name": "JavaVisibility",
+          "type": "'public' | 'protected' | 'private'",
+          "exported": false
+        }
+      ],
+      "enums": [],
+      "constants": [
+        {
+          "name": "CONTROL_KEYWORDS",
+          "type": "unknown",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "plugins/optional/json-formatter.ts",
+      "language": "typescript",
+      "loc": 51,
+      "estimatedTokens": 424,
+      "imports": [
+        {
+          "from": "../../types.js",
+          "names": [
+            "CodemapPlugin",
+            "OutputFormatter",
+            "ScanResult"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "formatJson",
+          "params": [
+            {
+              "name": "result",
+              "type": "ScanResult",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 33
+        },
+        {
+          "name": "createJsonFormatterPlugin",
+          "params": [],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 9
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "jsonFormatter",
+          "type": "OutputFormatter",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "plugins/optional/llms-txt-formatter.ts",
+      "language": "typescript",
+      "loc": 117,
+      "estimatedTokens": 1153,
+      "imports": [],
+      "exports": [],
+      "functions": [
+        {
+          "name": "formatLlmsTxt",
+          "params": [
+            {
+              "name": "result",
+              "type": "ScanResult",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 48
+        },
+        {
+          "name": "formatFileStructure",
+          "params": [
+            {
+              "name": "file",
+              "type": "FileAnalysis",
+              "optional": false
+            },
+            {
+              "name": "lines",
+              "type": "string[]",
+              "optional": false
+            }
+          ],
+          "returnType": "void",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 68
+        },
+        {
+          "name": "formatSig",
+          "params": [
+            {
+              "name": "func",
+              "type": "FunctionInfo",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 7
+        },
+        {
+          "name": "createLlmsTxtFormatterPlugin",
+          "params": [],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 9
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "llmsTxtFormatter",
+          "type": "OutputFormatter",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "plugins/optional/markdown-formatter.ts",
+      "language": "typescript",
+      "loc": 134,
+      "estimatedTokens": 1388,
+      "imports": [],
+      "exports": [],
+      "functions": [
+        {
+          "name": "formatMarkdown",
+          "params": [
+            {
+              "name": "result",
+              "type": "ScanResult",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 50
+        },
+        {
+          "name": "formatFileContent",
+          "params": [
+            {
+              "name": "file",
+              "type": "FileAnalysis",
+              "optional": false
+            },
+            {
+              "name": "lines",
+              "type": "string[]",
+              "optional": false
+            }
+          ],
+          "returnType": "void",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 84
+        },
+        {
+          "name": "formatFuncSig",
+          "params": [
+            {
+              "name": "func",
+              "type": "FunctionInfo",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 9
+        },
+        {
+          "name": "createMarkdownFormatterPlugin",
+          "params": [],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 9
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "markdownFormatter",
+          "type": "OutputFormatter",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "plugins/optional/monorepo.ts",
+      "language": "typescript",
+      "loc": 105,
+      "estimatedTokens": 1223,
+      "imports": [
+        {
+          "from": "node:fs",
+          "names": [
+            "existsSync",
+            "readFileSync",
+            "readdirSync",
+            "statSync"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "node:path",
+          "names": [
+            "join"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../types.js",
+          "names": [
+            "CodemapPlugin",
+            "CodemapContext"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "detectWorkspaces",
+          "params": [
+            {
+              "name": "rootDir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 33
+        },
+        {
+          "name": "parsePnpmWorkspaces",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rootDir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 28
+        },
+        {
+          "name": "resolveGlobWorkspaces",
+          "params": [
+            {
+              "name": "patterns",
+              "type": "string[]",
+              "optional": false
+            },
+            {
+              "name": "rootDir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 44
+        },
+        {
+          "name": "createMonorepoPlugin",
+          "params": [],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 16
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "plugins/optional/php-parser.ts",
+      "language": "typescript",
+      "loc": 385,
+      "estimatedTokens": 3757,
+      "imports": [
+        {
+          "from": "../../utils/comment-stripper.js",
+          "names": [
+            "stripComments"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/brace-counter.js",
+          "names": [
+            "findBlockEnd"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/type-truncator.js",
+          "names": [
+            "truncateType",
+            "simplifyType"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../token-estimator.js",
+          "names": [
+            "estimateTokens",
+            "countLoc"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "parsePhp",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "FileAnalysis",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 459
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "plugins/optional/python-parser.ts",
+      "language": "typescript",
+      "loc": 392,
+      "estimatedTokens": 4079,
+      "imports": [
+        {
+          "from": "../../utils/comment-stripper.js",
+          "names": [
+            "stripComments"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/type-truncator.js",
+          "names": [
+            "truncateType",
+            "simplifyType"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../token-estimator.js",
+          "names": [
+            "estimateTokens",
+            "countLoc"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "getIndent",
+          "params": [
+            {
+              "name": "line",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "number",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 9
+        },
+        {
+          "name": "parsePythonParams",
+          "params": [
+            {
+              "name": "paramsStr",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "ParamInfo[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 82
+        },
+        {
+          "name": "findIndentBlockEnd",
+          "params": [
+            {
+              "name": "lines",
+              "type": "readonly string[]",
+              "optional": false
+            },
+            {
+              "name": "startLine",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "blockIndent",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "returnType": "number",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 25
+        },
+        {
+          "name": "collectDecorators",
+          "params": [
+            {
+              "name": "lines",
+              "type": "readonly string[]",
+              "optional": false
+            },
+            {
+              "name": "lineIdx",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 20
+        },
+        {
+          "name": "extractAllList",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "Set<string>| null",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 14
+        },
+        {
+          "name": "isPythonExported",
+          "params": [
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "allList",
+              "type": "Set<string>| null",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 6
+        },
+        {
+          "name": "extractClassMethods",
+          "params": [
+            {
+              "name": "lines",
+              "type": "readonly string[]",
+              "optional": false
+            },
+            {
+              "name": "classStartLine",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "classEndLine",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "classIndent",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "allList",
+              "type": "Set<string>| null",
+              "optional": false
+            }
+          ],
+          "returnType": "FunctionInfo[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 64
+        },
+        {
+          "name": "extractClassProperties",
+          "params": [
+            {
+              "name": "lines",
+              "type": "readonly string[]",
+              "optional": false
+            },
+            {
+              "name": "classStartLine",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "classEndLine",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "classIndent",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "returnType": "PropertyInfo[]",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 50
+        },
+        {
+          "name": "parsePython",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "FileAnalysis",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 164
+        },
+        {
+          "name": "createPythonParserPlugin",
+          "params": [],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 9
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "pythonParser",
+          "type": "LanguageParser",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "plugins/optional/rust-parser.ts",
+      "language": "typescript",
+      "loc": 473,
+      "estimatedTokens": 4653,
+      "imports": [
+        {
+          "from": "../../utils/comment-stripper.js",
+          "names": [
+            "stripComments"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/brace-counter.js",
+          "names": [
+            "findBlockEnd"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../utils/type-truncator.js",
+          "names": [
+            "truncateType",
+            "simplifyType"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "../../token-estimator.js",
+          "names": [
+            "estimateTokens",
+            "countLoc"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "parseRust",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "FileAnalysis",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 578
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "plugins/registry.ts",
+      "language": "typescript",
+      "loc": 113,
+      "estimatedTokens": 1251,
+      "imports": [
+        {
+          "from": "../types.js",
+          "names": [
+            "CodemapPlugin",
+            "LanguageId"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        },
+        {
+          "from": "./core/typescript-parser.js",
+          "names": [
+            "createTypescriptParserPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./core/compact-formatter.js",
+          "names": [
+            "createCompactFormatterPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/go-parser.js",
+          "names": [
+            "createGoParserPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/python-parser.js",
+          "names": [
+            "createPythonParserPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/rust-parser.js",
+          "names": [
+            "createRustParserPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/php-parser.js",
+          "names": [
+            "createPhpParserPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/java-parser.js",
+          "names": [
+            "createJavaParserPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/csharp-parser.js",
+          "names": [
+            "createCsharpParserPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/json-formatter.js",
+          "names": [
+            "createJsonFormatterPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/markdown-formatter.js",
+          "names": [
+            "createMarkdownFormatterPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/llms-txt-formatter.js",
+          "names": [
+            "createLlmsTxtFormatterPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/complexity.js",
+          "names": [
+            "createComplexityPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/ignore.js",
+          "names": [
+            "createIgnorePlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/incremental.js",
+          "names": [
+            "createIncrementalPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/git-hooks.js",
+          "names": [
+            "createGitHooksPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/claude-md.js",
+          "names": [
+            "createClaudeMdPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./optional/monorepo.js",
+          "names": [
+            "createMonorepoPlugin"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "getCorePlugins",
+          "params": [],
+          "returnType": "CodemapPlugin[]",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        },
+        {
+          "name": "getParserPlugin",
+          "params": [
+            {
+              "name": "language",
+              "type": "LanguageId",
+              "optional": false
+            }
+          ],
+          "returnType": "CodemapPlugin",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 4
+        },
+        {
+          "name": "autoDetectPlugins",
+          "params": [
+            {
+              "name": "extensions",
+              "type": "Set<string>",
+              "optional": false
+            }
+          ],
+          "returnType": "CodemapPlugin[]",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 19
+        },
+        {
+          "name": "getFormatterPlugins",
+          "params": [
+            {
+              "name": "formats",
+              "type": "readonly string[]",
+              "optional": false
+            }
+          ],
+          "returnType": "CodemapPlugin[]",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 24
+        },
+        {
+          "name": "getFeaturePlugins",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 5
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "EXTENSION_LANGUAGE_MAP",
+          "type": "Record<string, LanguageId>",
+          "exported": false
+        },
+        {
+          "name": "plugins",
+          "type": "CodemapPlugin[]",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "scanner.ts",
+      "language": "typescript",
+      "loc": 111,
+      "estimatedTokens": 1204,
+      "imports": [
+        {
+          "from": "node:fs",
+          "names": [
+            "readdirSync",
+            "statSync",
+            "readFileSync"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "node:path",
+          "names": [
+            "join",
+            "extname",
+            "relative"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./utils/glob-matcher.js",
+          "names": [
+            "shouldIgnore",
+            "DEFAULT_IGNORE_PATTERNS"
+          ],
+          "kind": "internal",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "getLanguageForExtension",
+          "params": [
+            {
+              "name": "ext",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string | undefined",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        },
+        {
+          "name": "getSupportedExtensions",
+          "params": [],
+          "returnType": "string[]",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        },
+        {
+          "name": "scanDirectory",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 7
+        },
+        {
+          "name": "walk",
+          "params": [
+            {
+              "name": "dir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "void",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 51
+        },
+        {
+          "name": "readIgnoreFile",
+          "params": [
+            {
+              "name": "dir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 12
+        }
+      ],
+      "classes": [],
+      "interfaces": [
+        {
+          "name": "ScannedFile",
+          "properties": [
+            {
+              "name": "absolutePath",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "relativePath",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "language",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        }
+      ],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "EXTENSION_MAP",
+          "type": "Readonly<Record<string, string>>",
+          "exported": false
+        },
+        {
+          "name": "allPatterns",
+          "type": "unknown",
+          "exported": false
+        },
+        {
+          "name": "files",
+          "type": "ScannedFile[]",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "token-estimator.ts",
+      "language": "typescript",
+      "loc": 37,
+      "estimatedTokens": 594,
+      "imports": [
+        {
+          "from": "./types.js",
+          "names": [
+            "LanguageId"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "estimateTokens",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "language",
+              "type": "LanguageId | string",
+              "optional": true
+            }
+          ],
+          "returnType": "number",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 6
+        },
+        {
+          "name": "estimateOutputTokens",
+          "params": [
+            {
+              "name": "output",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "number",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 5
+        },
+        {
+          "name": "countLoc",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "number",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 13
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "CHARS_PER_TOKEN",
+          "type": "Record<string, number>",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "types.ts",
+      "language": "typescript",
+      "loc": 255,
+      "estimatedTokens": 2677,
+      "imports": [],
+      "exports": [],
+      "functions": [],
+      "classes": [],
+      "interfaces": [
+        {
+          "name": "WatchConfig",
+          "properties": [
+            {
+              "name": "debounce",
+              "type": "number | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "polling",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "interval",
+              "type": "number | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "CodemapConfig",
+          "properties": [
+            {
+              "name": "root",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "output",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "format",
+              "type": "FormatType | readonly FormatType[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "languages",
+              "type": "readonly LanguageId[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "ignore",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "incremental",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "watch",
+              "type": "WatchConfig | boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "complexity",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "tokenCounts",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "monorepo",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "ScanOptions",
+          "properties": [
+            {
+              "name": "format",
+              "type": "FormatType | readonly FormatType[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "incremental",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "complexity",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "tokenCounts",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "monorepo",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "ignore",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "languages",
+              "type": "readonly LanguageId[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "ParamInfo",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "optional",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "defaultValue",
+              "type": "string | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "PropertyInfo",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "scope",
+              "type": "| | | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "static",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "readonly",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "optional",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "FunctionInfo",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "params",
+              "type": "readonly ParamInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "returnType",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "exported",
+              "type": "boolean",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "async",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "generator",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "static",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "scope",
+              "type": "| | | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "complexity",
+              "type": "number | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "loc",
+              "type": "number",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "decorators",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "ClassInfo",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "extends",
+              "type": "string | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "implements",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "methods",
+              "type": "readonly FunctionInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "properties",
+              "type": "readonly PropertyInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "exported",
+              "type": "boolean",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "abstract",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "decorators",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "loc",
+              "type": "number",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "InterfaceInfo",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "extends",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "properties",
+              "type": "readonly PropertyInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "methods",
+              "type": "readonly FunctionInfo[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "exported",
+              "type": "boolean",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "generics",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "TypeInfo",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "exported",
+              "type": "boolean",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "generics",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "EnumInfo",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "members",
+              "type": "readonly string[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "exported",
+              "type": "boolean",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "ConstantInfo",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "exported",
+              "type": "boolean",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "ComponentInfo",
+          "extends": [
+            "FunctionInfo"
+          ],
+          "properties": [
+            {
+              "name": "kind",
+              "type": ";",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "HookInfo",
+          "extends": [
+            "FunctionInfo"
+          ],
+          "properties": [
+            {
+              "name": "kind",
+              "type": ";",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "StructInfo",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "fields",
+              "type": "readonly PropertyInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "methods",
+              "type": "readonly FunctionInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "exported",
+              "type": "boolean",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "derives",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "embeds",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "TraitInfo",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "methods",
+              "type": "readonly FunctionInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "exported",
+              "type": "boolean",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "superTraits",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "ImportInfo",
+          "properties": [
+            {
+              "name": "from",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "names",
+              "type": "readonly string[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "kind",
+              "type": "|",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "isTypeOnly",
+              "type": "boolean | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "ExportInfo",
+          "properties": [
+            {
+              "name": "from",
+              "type": "string | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "names",
+              "type": "readonly string[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "isReExport",
+              "type": "boolean",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "PackageInfo",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "path",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "FileAnalysis",
+          "properties": [
+            {
+              "name": "path",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "language",
+              "type": "LanguageId",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "loc",
+              "type": "number",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "estimatedTokens",
+              "type": "number",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "complexity",
+              "type": "number | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "imports",
+              "type": "readonly ImportInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "exports",
+              "type": "readonly ExportInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "functions",
+              "type": "readonly FunctionInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "classes",
+              "type": "readonly ClassInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "interfaces",
+              "type": "readonly InterfaceInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "types",
+              "type": "readonly TypeInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "enums",
+              "type": "readonly EnumInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "constants",
+              "type": "readonly ConstantInfo[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "components",
+              "type": "readonly ComponentInfo[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "hooks",
+              "type": "readonly HookInfo[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "structs",
+              "type": "readonly StructInfo[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "traits",
+              "type": "readonly TraitInfo[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "packages",
+              "type": "readonly PackageInfo[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "ScanStats",
+          "properties": [
+            {
+              "name": "fileCount",
+              "type": "number",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "totalLoc",
+              "type": "number",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "totalTokens",
+              "type": "number",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "languageBreakdown",
+              "type": "Readonly<Record<string, number>>",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "scanDurationMs",
+              "type": "number",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "incremental",
+              "type": "boolean",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "changedFiles",
+              "type": "number | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "ScanResult",
+          "properties": [
+            {
+              "name": "root",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "files",
+              "type": "readonly FileAnalysis[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "dependencyGraph",
+              "type": "Readonly<Record<string, readonly string[]>>",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "externalDeps",
+              "type": "Readonly<Record<string, readonly string[]>>",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "stats",
+              "type": "ScanStats",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "output",
+              "type": "string | undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            },
+            {
+              "name": "workspaces",
+              "type": "Readonly<Record<string, ScanResult>>| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "CodemapContext",
+          "properties": [
+            {
+              "name": "config",
+              "type": "CodemapConfig",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "files",
+              "type": "FileAnalysis[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "dependencyGraph",
+              "type": "Record<string, string[]>",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "externalDeps",
+              "type": "Record<string, string[]>",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "LanguageParser",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "extensions",
+              "type": "readonly string[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "OutputFormatter",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "extension",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "CodemapPlugin",
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "dependencies",
+              "type": "readonly string[]| undefined",
+              "static": false,
+              "readonly": true,
+              "optional": true
+            }
+          ],
+          "methods": [],
+          "exported": true,
+          "generics": [
+            "TContext"
+          ]
+        },
+        {
+          "name": "CodemapKernel",
+          "properties": [],
+          "methods": [
+            {
+              "name": "registerParser",
+              "params": [
+                {
+                  "name": "parser",
+                  "type": "LanguageParser",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "registerFormatter",
+              "params": [
+                {
+                  "name": "formatter",
+                  "type": "OutputFormatter",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "getParser",
+              "params": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "returnType": "LanguageParser | undefined",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "getParserForExtension",
+              "params": [
+                {
+                  "name": "ext",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "returnType": "LanguageParser | undefined",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "getFormatter",
+              "params": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "returnType": "OutputFormatter | undefined",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "listParsers",
+              "params": [],
+              "returnType": "readonly LanguageParser[]",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "listFormatters",
+              "params": [],
+              "returnType": "readonly OutputFormatter[]",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "emit",
+              "params": [
+                {
+                  "name": "event",
+                  "type": "KernelEvent",
+                  "optional": false
+                },
+                {
+                  "name": "...args",
+                  "type": "unknown[]",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "on",
+              "params": [
+                {
+                  "name": "event",
+                  "type": "KernelEvent",
+                  "optional": false
+                },
+                {
+                  "name": "listener",
+                  "type": "EventListener",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "off",
+              "params": [
+                {
+                  "name": "event",
+                  "type": "KernelEvent",
+                  "optional": false
+                },
+                {
+                  "name": "listener",
+                  "type": "EventListener",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "getConfig",
+              "params": [],
+              "returnType": "CodemapConfig",
+              "exported": true,
+              "loc": 1
+            }
+          ],
+          "exported": true,
+          "generics": [
+            "TContext"
+          ]
+        },
+        {
+          "name": "WatchEvent",
+          "properties": [
+            {
+              "name": "changedFiles",
+              "type": "readonly string[]",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "map",
+              "type": "ScanResult",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "string",
+              "static": false,
+              "readonly": true,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        },
+        {
+          "name": "CodemapWatcher",
+          "properties": [],
+          "methods": [
+            {
+              "name": "on",
+              "params": [
+                {
+                  "name": "listener",
+                  "type": "(event: WatchEvent",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "on",
+              "params": [
+                {
+                  "name": "listener",
+                  "type": "(error: Error",
+                  "optional": false
+                }
+              ],
+              "returnType": "void",
+              "exported": true,
+              "loc": 1
+            },
+            {
+              "name": "close",
+              "params": [],
+              "returnType": "void",
+              "exported": true,
+              "loc": 1
+            }
+          ],
+          "exported": true
+        }
+      ],
+      "types": [
+        {
+          "name": "LanguageId",
+          "type": "| 'typescript' | 'go' | 'python' | 'rust' | 'php' | 'java' | 'csharp'",
+          "exported": true
+        },
+        {
+          "name": "FormatType",
+          "type": "'compact' | 'json' | 'markdown' | 'llms-txt'",
+          "exported": true
+        },
+        {
+          "name": "KernelEvent",
+          "type": "| 'plugin:registered' | 'plugin:unregistered' | 'scan:start' | 'scan:file' | ...",
+          "exported": true
+        },
+        {
+          "name": "EventListener",
+          "type": "(...args: unknown[])=>void",
+          "exported": true
+        }
+      ],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "utils/brace-counter.ts",
+      "language": "typescript",
+      "loc": 93,
+      "estimatedTokens": 1143,
+      "imports": [],
+      "exports": [],
+      "functions": [
+        {
+          "name": "createBraceState",
+          "params": [],
+          "returnType": "BraceState",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 3
+        },
+        {
+          "name": "updateBraceState",
+          "params": [
+            {
+              "name": "state",
+              "type": "BraceState",
+              "optional": false
+            },
+            {
+              "name": "ch",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "void",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 22
+        },
+        {
+          "name": "countBraceDepth",
+          "params": [
+            {
+              "name": "line",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "number",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 8
+        },
+        {
+          "name": "countParenDepth",
+          "params": [
+            {
+              "name": "line",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "number",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 8
+        },
+        {
+          "name": "findBlockEnd",
+          "params": [
+            {
+              "name": "lines",
+              "type": "readonly string[]",
+              "optional": false
+            },
+            {
+              "name": "startLine",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "returnType": "number",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 21
+        },
+        {
+          "name": "extractBraceContent",
+          "params": [
+            {
+              "name": "text",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startPos",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 19
+        },
+        {
+          "name": "isClosingBraceLine",
+          "params": [
+            {
+              "name": "line",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 2
+        }
+      ],
+      "classes": [],
+      "interfaces": [
+        {
+          "name": "BraceState",
+          "properties": [
+            {
+              "name": "braces",
+              "type": "number",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "parens",
+              "type": "number",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            },
+            {
+              "name": "brackets",
+              "type": "number",
+              "static": false,
+              "readonly": false,
+              "optional": false
+            }
+          ],
+          "methods": [],
+          "exported": true
+        }
+      ],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "utils/comment-stripper.ts",
+      "language": "typescript",
+      "loc": 232,
+      "estimatedTokens": 1911,
+      "imports": [],
+      "exports": [],
+      "functions": [
+        {
+          "name": "stripComments",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "language",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 184
+        },
+        {
+          "name": "stripPythonComments",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 79
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "utils/git.ts",
+      "language": "typescript",
+      "loc": 127,
+      "estimatedTokens": 1401,
+      "imports": [
+        {
+          "from": "node:child_process",
+          "names": [
+            "execFileSync"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "node:fs",
+          "names": [
+            "existsSync",
+            "readFileSync",
+            "writeFileSync",
+            "mkdirSync",
+            "unlinkSync",
+            "chmodSync"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "node:path",
+          "names": [
+            "join"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "gitExec",
+          "params": [
+            {
+              "name": "args",
+              "type": "string[]",
+              "optional": false
+            },
+            {
+              "name": "cwd",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "returnType": "string",
+          "exported": false,
+          "async": false,
+          "generator": false,
+          "loc": 7
+        },
+        {
+          "name": "isGitAvailable",
+          "params": [],
+          "returnType": "boolean",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 8
+        },
+        {
+          "name": "isGitRepo",
+          "params": [
+            {
+              "name": "dir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 8
+        },
+        {
+          "name": "getGitRoot",
+          "params": [
+            {
+              "name": "dir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string | null",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 7
+        },
+        {
+          "name": "getChangedFiles",
+          "params": [
+            {
+              "name": "dir",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ref",
+              "type": "string =",
+              "optional": false
+            }
+          ],
+          "returnType": "string[]",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 32
+        },
+        {
+          "name": "hashContent",
+          "params": [
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 7
+        },
+        {
+          "name": "installPreCommitHook",
+          "params": [
+            {
+              "name": "repoDir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 38
+        },
+        {
+          "name": "uninstallPreCommitHook",
+          "params": [
+            {
+              "name": "repoDir",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 32
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "utils/glob-matcher.ts",
+      "language": "typescript",
+      "loc": 128,
+      "estimatedTokens": 1324,
+      "imports": [],
+      "exports": [],
+      "functions": [
+        {
+          "name": "globToRegex",
+          "params": [
+            {
+              "name": "pattern",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "RegExp",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 65
+        },
+        {
+          "name": "matchGlob",
+          "params": [
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "pattern",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 22
+        },
+        {
+          "name": "shouldIgnore",
+          "params": [
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "patterns",
+              "type": "readonly string[]",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 25
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "DEFAULT_IGNORE_PATTERNS",
+          "type": "readonly string[]",
+          "exported": true
+        }
+      ]
+    },
+    {
+      "path": "utils/index.ts",
+      "language": "typescript",
+      "loc": 28,
+      "estimatedTokens": 195,
+      "imports": [],
+      "exports": [
+        {
+          "from": "./comment-stripper.js",
+          "names": [
+            "stripComments"
+          ],
+          "isReExport": true
+        },
+        {
+          "from": "./type-truncator.js",
+          "names": [
+            "truncateType",
+            "simplifyType",
+            "cleanReturnType"
+          ],
+          "isReExport": true
+        }
+      ],
+      "functions": [],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": []
+    },
+    {
+      "path": "utils/type-truncator.ts",
+      "language": "typescript",
+      "loc": 26,
+      "estimatedTokens": 477,
+      "imports": [],
+      "exports": [],
+      "functions": [
+        {
+          "name": "truncateType",
+          "params": [
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "maxLength",
+              "type": "number",
+              "optional": true,
+              "defaultValue": "DEFAULT_MAX_LENGTH"
+            }
+          ],
+          "returnType": "string",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 6
+        },
+        {
+          "name": "simplifyType",
+          "params": [
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 7
+        },
+        {
+          "name": "cleanReturnType",
+          "params": [
+            {
+              "name": "raw",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 10
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [],
+      "enums": [],
+      "constants": [
+        {
+          "name": "DEFAULT_MAX_LENGTH",
+          "type": "unknown",
+          "exported": false
+        }
+      ]
+    },
+    {
+      "path": "watcher.ts",
+      "language": "typescript",
+      "loc": 109,
+      "estimatedTokens": 1070,
+      "imports": [
+        {
+          "from": "node:fs",
+          "names": [
+            "watch",
+            "type FSWatcher"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "node:path",
+          "names": [
+            "join"
+          ],
+          "kind": "external",
+          "isTypeOnly": false
+        },
+        {
+          "from": "./kernel.js",
+          "names": [
+            "Kernel"
+          ],
+          "kind": "internal",
+          "isTypeOnly": true
+        }
+      ],
+      "exports": [],
+      "functions": [
+        {
+          "name": "createFileWatcher",
+          "params": [
+            {
+              "name": "kernel",
+              "type": "Kernel",
+              "optional": false
+            },
+            {
+              "name": "config",
+              "type": "CodemapConfig",
+              "optional": false
+            },
+            {
+              "name": "debounceMs",
+              "type": "number",
+              "optional": true,
+              "defaultValue": "300"
+            }
+          ],
+          "returnType": "CodemapWatcher",
+          "exported": true,
+          "async": false,
+          "generator": false,
+          "loc": 113
+        }
+      ],
+      "classes": [],
+      "interfaces": [],
+      "types": [
+        {
+          "name": "WatchChangeListener",
+          "type": "(event: WatchEvent)=>void",
+          "exported": false
+        },
+        {
+          "name": "WatchErrorListener",
+          "type": "(error: Error)=>void",
+          "exported": false
+        }
+      ],
+      "enums": [],
+      "constants": []
+    }
+  ],
+  "dependencyGraph": {
+    "builder.ts": [
+      "./config.js",
+      "./kernel.js",
+      "./scanner.js",
+      "./watcher.js"
+    ],
+    "cli.ts": [
+      "./config.js",
+      "./kernel.js",
+      "./scanner.js",
+      "./plugins/optional/git-hooks.js",
+      "./plugins/optional/claude-md.js",
+      "./watcher.js",
+      "./types.js"
+    ],
+    "config.ts": [
+      "./types.js",
+      "./errors.js"
+    ],
+    "index.ts": [
+      "./config.js",
+      "./builder.js",
+      "./kernel.js",
+      "./scanner.js"
+    ],
+    "kernel.ts": [
+      "./errors.js",
+      "./scanner.js",
+      "./token-estimator.js"
+    ],
+    "plugins/core/typescript-parser.ts": [
+      "../../utils/comment-stripper.js",
+      "../../utils/brace-counter.js",
+      "../../utils/type-truncator.js",
+      "../../token-estimator.js"
+    ],
+    "plugins/optional/claude-md.ts": [
+      "../../types.js"
+    ],
+    "plugins/optional/complexity.ts": [
+      "../../types.js"
+    ],
+    "plugins/optional/csharp-parser.ts": [
+      "../../utils/comment-stripper.js",
+      "../../utils/brace-counter.js",
+      "../../utils/type-truncator.js",
+      "../../token-estimator.js"
+    ],
+    "plugins/optional/git-hooks.ts": [
+      "../../types.js",
+      "../../utils/git.js"
+    ],
+    "plugins/optional/go-parser.ts": [
+      "../../utils/comment-stripper.js",
+      "../../utils/brace-counter.js",
+      "../../utils/type-truncator.js",
+      "../../token-estimator.js"
+    ],
+    "plugins/optional/ignore.ts": [
+      "../../types.js",
+      "../../scanner.js"
+    ],
+    "plugins/optional/incremental.ts": [
+      "../../types.js",
+      "../../utils/git.js"
+    ],
+    "plugins/optional/java-parser.ts": [
+      "../../utils/comment-stripper.js",
+      "../../utils/brace-counter.js",
+      "../../utils/type-truncator.js",
+      "../../token-estimator.js"
+    ],
+    "plugins/optional/json-formatter.ts": [
+      "../../types.js"
+    ],
+    "plugins/optional/monorepo.ts": [
+      "../../types.js"
+    ],
+    "plugins/optional/php-parser.ts": [
+      "../../utils/comment-stripper.js",
+      "../../utils/brace-counter.js",
+      "../../utils/type-truncator.js",
+      "../../token-estimator.js"
+    ],
+    "plugins/optional/python-parser.ts": [
+      "../../utils/comment-stripper.js",
+      "../../utils/type-truncator.js",
+      "../../token-estimator.js"
+    ],
+    "plugins/optional/rust-parser.ts": [
+      "../../utils/comment-stripper.js",
+      "../../utils/brace-counter.js",
+      "../../utils/type-truncator.js",
+      "../../token-estimator.js"
+    ],
+    "plugins/registry.ts": [
+      "../types.js",
+      "./core/typescript-parser.js",
+      "./core/compact-formatter.js",
+      "./optional/go-parser.js",
+      "./optional/python-parser.js",
+      "./optional/rust-parser.js",
+      "./optional/php-parser.js",
+      "./optional/java-parser.js",
+      "./optional/csharp-parser.js",
+      "./optional/json-formatter.js",
+      "./optional/markdown-formatter.js",
+      "./optional/llms-txt-formatter.js",
+      "./optional/complexity.js",
+      "./optional/ignore.js",
+      "./optional/incremental.js",
+      "./optional/git-hooks.js",
+      "./optional/claude-md.js",
+      "./optional/monorepo.js"
+    ],
+    "scanner.ts": [
+      "./utils/glob-matcher.js"
+    ],
+    "token-estimator.ts": [
+      "./types.js"
+    ],
+    "watcher.ts": [
+      "./kernel.js"
+    ]
+  }
+}

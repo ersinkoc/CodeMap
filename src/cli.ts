@@ -127,16 +127,23 @@ Options:
  * Get version from package.json.
  */
 function getVersion(): string {
-  try {
-    const pkgPath = join(__dirname, '..', 'package.json');
-    if (existsSync(pkgPath)) {
-      const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8')) as Record<string, unknown>;
-      return (pkg['version'] as string) ?? '1.0.0';
+  // Try multiple paths to find package.json (works in both dev and installed contexts)
+  const candidates = [
+    join(import.meta.dirname ?? '.', '..', 'package.json'),
+    join(import.meta.dirname ?? '.', 'package.json'),
+  ];
+  for (const pkgPath of candidates) {
+    try {
+      if (existsSync(pkgPath)) {
+        const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8')) as Record<string, unknown>;
+        const version = pkg['version'];
+        if (typeof version === 'string') return version;
+      }
+    } catch {
+      // Try next
     }
-  } catch {
-    // Fallback
   }
-  return '1.0.0';
+  return '0.0.1';
 }
 
 /**
