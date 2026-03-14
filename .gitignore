@@ -1,6 +1,5 @@
 node_modules/
 dist/
-
 coverage/
 *.tsbuildinfo
 .DS_Store
@@ -8,3 +7,10 @@ Thumbs.db
 *.log
 .env
 .env.*
+
+# Codemap generated files (map.txt is committed for LLM access)
+.codemap/cache.json
+.codemap/stats.json
+.codemap/map.json
+.codemap/map.md
+.codemap/llms.txt

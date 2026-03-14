@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.4 (2026-03-14)
+
+- `init` command now auto-updates `.gitignore` to exclude `.codemap/*` but keep `map.txt`
+- Remove self-dependency from package.json
+- Improve `.codemapignore` defaults (`*.config.ts`, `tests/`, `examples/`, `docs/`)
+
 ## 0.0.3 (2026-03-14)
 
 - Fix CLI bin path for npx compatibility

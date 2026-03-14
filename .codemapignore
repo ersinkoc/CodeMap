@@ -4,7 +4,11 @@
 *.test.ts
 *.spec.ts
 *.stories.tsx
+*.config.ts
 __mocks__/
 __tests__/
+tests/
 fixtures/
 generated/
+examples/
+docs/

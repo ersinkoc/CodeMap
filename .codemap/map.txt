@@ -1,5 +1,5 @@
 # CODEMAP — D:\Codebox\__NPM__\CodeMap\src
-# Generated: 2026-03-14 | Files: 37 | LOC: 6,440 | ~69,152 tokens
+# Generated: 2026-03-14 | Files: 37 | LOC: 6,449 | ~69,290 tokens
 
 ## EXTERNAL DEPS
   node:path: resolve, join, extname, relative
@@ -25,7 +25,7 @@
     .[private] buildConfig() → CodemapConfig
     .[private] buildKernel(config: CodemapConfig) → Kernel
 
-━━ cli.ts (329L) [~3,347T]
+━━ cli.ts (338L) [~3,485T]
   ƒ parseArgs(argv: string[]) → CliArgs
   ƒ printHelp()
   ƒ getVersion() → string

@@ -257,6 +257,17 @@ export default defineConfig({
     );
     console.log('Created codemap.config.ts');
   }
+
+  // Update .gitignore to exclude codemap cache but keep map.txt
+  const gitignorePath = join(cwd, '.gitignore');
+  const codemapGitignore = '\n# Codemap (keep map.txt for LLM access)\n.codemap/*\n!.codemap/map.txt\n';
+  if (existsSync(gitignorePath)) {
+    const content = readFileSync(gitignorePath, 'utf-8');
+    if (!content.includes('.codemap')) {
+      writeFileSync(gitignorePath, content.trimEnd() + '\n' + codemapGitignore);
+      console.log('Updated .gitignore');
+    }
+  }
 }
 
 /**
