@@ -25,7 +25,7 @@ describe('CLI argument parsing', () => {
   it('should have correct bin entry in package.json', () => {
     const pkg = require('../../package.json');
     expect(pkg.bin).toHaveProperty('codemap');
-    expect(pkg.bin.codemap).toBe('./dist/cli.js');
+    expect(pkg.bin.codemap).toBe('dist/cli.js');
   });
 
   it('should have correct scripts', () => {
