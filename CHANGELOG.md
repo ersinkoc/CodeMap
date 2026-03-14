@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.3 (2026-03-14)
+
+- Fix CLI bin path for npx compatibility
+- Fix ESM builder require() → import
+
 ## 0.0.2 (2026-03-14)
 
 ### Features
