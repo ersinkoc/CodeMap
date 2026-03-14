@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createKernel, Kernel } from '../../src/kernel.js';
+import { createKernel, Kernel, setupKernel } from '../../src/kernel.js';
 import type {
   CodemapConfig,
   CodemapPlugin,
@@ -797,5 +797,82 @@ describe('kernel.scan', () => {
 
     await kernel.scan();
     expect(fileListener).toHaveBeenCalled();
+  });
+});
+
+describe('setupKernel', () => {
+  it('should return a Kernel instance', () => {
+    const fixtureDir = require('node:path').join(__dirname, '..', 'fixtures', 'typescript-project', 'src');
+    const config = makeConfig({ root: fixtureDir });
+    const kernel = setupKernel(config);
+
+    expect(kernel).toBeInstanceOf(Kernel);
+  });
+
+  it('should register core plugins (typescript-parser, compact-formatter)', () => {
+    const fixtureDir = require('node:path').join(__dirname, '..', 'fixtures', 'typescript-project', 'src');
+    const config = makeConfig({ root: fixtureDir });
+    const kernel = setupKernel(config);
+
+    const pluginNames = kernel.listPlugins().map((p) => p.name);
+    expect(pluginNames).toContain('typescript-parser');
+    expect(pluginNames).toContain('compact-formatter');
+  });
+
+  it('should register feature plugins (ignore, code-analysis)', () => {
+    const fixtureDir = require('node:path').join(__dirname, '..', 'fixtures', 'typescript-project', 'src');
+    const config = makeConfig({ root: fixtureDir });
+    const kernel = setupKernel(config);
+
+    const pluginNames = kernel.listPlugins().map((p) => p.name);
+    expect(pluginNames).toContain('ignore');
+    expect(pluginNames).toContain('code-analysis');
+  });
+
+  it('should accept and register extra custom plugins', () => {
+    const fixtureDir = require('node:path').join(__dirname, '..', 'fixtures', 'typescript-project', 'src');
+    const config = makeConfig({ root: fixtureDir });
+    const customPlugin = makePlugin('my-custom-plugin');
+
+    const kernel = setupKernel(config, [customPlugin]);
+
+    const pluginNames = kernel.listPlugins().map((p) => p.name);
+    expect(pluginNames).toContain('my-custom-plugin');
+    expect(customPlugin.install).toHaveBeenCalled();
+  });
+
+  it('should not register duplicate extra plugins', () => {
+    const fixtureDir = require('node:path').join(__dirname, '..', 'fixtures', 'typescript-project', 'src');
+    const config = makeConfig({ root: fixtureDir });
+    // ignore plugin is already registered by getFeaturePlugins
+    const duplicatePlugin = makePlugin('ignore');
+
+    const kernel = setupKernel(config, [duplicatePlugin]);
+
+    // Should not throw, and ignore should appear only once
+    const ignorePlugins = kernel.listPlugins().filter((p) => p.name === 'ignore');
+    expect(ignorePlugins.length).toBe(1);
+    // The custom duplicate's install should NOT have been called
+    expect(duplicatePlugin.install).not.toHaveBeenCalled();
+  });
+
+  it('should register formatter plugins based on config.format', () => {
+    const fixtureDir = require('node:path').join(__dirname, '..', 'fixtures', 'typescript-project', 'src');
+    const config = makeConfig({ root: fixtureDir, format: ['compact', 'markdown'] as any });
+    const kernel = setupKernel(config);
+
+    const pluginNames = kernel.listPlugins().map((p) => p.name);
+    expect(pluginNames).toContain('markdown-formatter');
+  });
+
+  it('should auto-detect language plugins based on file extensions', () => {
+    const fixtureDir = require('node:path').join(__dirname, '..', 'fixtures', 'mixed-project', 'src');
+    const config = makeConfig({ root: fixtureDir });
+    const kernel = setupKernel(config);
+
+    const pluginNames = kernel.listPlugins().map((p) => p.name);
+    // mixed-project has .go and .py files, so auto-detect should register those parsers
+    expect(pluginNames).toContain('go-parser');
+    expect(pluginNames).toContain('python-parser');
   });
 });

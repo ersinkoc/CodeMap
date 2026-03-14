@@ -647,4 +647,55 @@ export function run(): void { }`;
     expect(item).toBeDefined();
     expect(item!.type).toBe('[number, number]');
   });
+
+  it('should parse multi-line named imports', () => {
+    const code = `import {
+  Foo,
+  Bar,
+  Baz,
+} from './types.js';
+
+export function run(): void { }`;
+    const result = parser.parse(code, 'test.ts');
+
+    expect(result.imports).toHaveLength(1);
+    expect(result.imports[0]!.names).toContain('Foo');
+    expect(result.imports[0]!.names).toContain('Bar');
+    expect(result.imports[0]!.names).toContain('Baz');
+    expect(result.imports[0]!.from).toBe('./types.js');
+    expect(result.imports[0]!.kind).toBe('internal');
+  });
+
+  it('should parse multi-line type re-export', () => {
+    const code = `export type {
+  Config,
+  Options,
+} from './types.js';
+
+export function run(): void { }`;
+    const result = parser.parse(code, 'test.ts');
+
+    const reExport = result.exports.find(
+      (e: any) => e.isReExport && e.names.includes('Config'),
+    );
+    expect(reExport).toBeDefined();
+    expect(reExport!.names).toContain('Config');
+    expect(reExport!.names).toContain('Options');
+    expect(reExport!.from).toBe('./types.js');
+  });
+
+  it('should parse multi-line import where from is on next line after }', () => {
+    const code = `import {
+  A, B
+}
+from './module.js';
+
+export function run(): void { }`;
+    const result = parser.parse(code, 'test.ts');
+
+    expect(result.imports).toHaveLength(1);
+    expect(result.imports[0]!.names).toContain('A');
+    expect(result.imports[0]!.names).toContain('B');
+    expect(result.imports[0]!.from).toBe('./module.js');
+  });
 });

@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { analyzeCode } from '../../../src/plugins/optional/code-analysis.js';
-import type { ScanResult, FileAnalysis } from '../../../src/types.js';
+import { describe, it, expect, vi } from 'vitest';
+import { analyzeCode, createCodeAnalysisPlugin } from '../../../src/plugins/optional/code-analysis.js';
+import type { ScanResult, FileAnalysis, CodemapKernel, CodeAnalysis } from '../../../src/types.js';
 
 function makeFile(path: string, overrides: Partial<FileAnalysis> = {}): FileAnalysis {
   return {
@@ -296,6 +296,332 @@ describe('Code Analysis Plugin', () => {
       expect(analysis.entryPoints).toContain('index.ts');
       expect(analysis.entryPoints).toContain('cli.ts');
       expect(analysis.entryPoints).not.toContain('utils.ts');
+    });
+  });
+
+  describe('resolveImportPath', () => {
+    it('should resolve imports with .js extension (ESM-style)', () => {
+      const files = [
+        makeFile('src/index.ts', {
+          imports: [{ from: './utils.js', names: ['helper'], kind: 'internal' }],
+        }),
+        makeFile('src/utils.ts'),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      expect(analysis.reverseDeps['src/utils.ts']).toContain('src/index.ts');
+    });
+
+    it('should resolve imports in nested directories', () => {
+      const files = [
+        makeFile('src/index.ts', {
+          imports: [{ from: './plugins/optional/foo.js', names: ['x'], kind: 'internal' }],
+        }),
+        makeFile('src/plugins/optional/foo.ts'),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      expect(analysis.reverseDeps['src/plugins/optional/foo.ts']).toContain('src/index.ts');
+    });
+
+    it('should resolve index file imports (./utils → utils/index.ts)', () => {
+      const files = [
+        makeFile('src/app.ts', {
+          imports: [{ from: './utils', names: ['helper'], kind: 'internal' }],
+        }),
+        makeFile('src/utils/index.ts'),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      expect(analysis.reverseDeps['src/utils/index.ts']).toContain('src/app.ts');
+    });
+
+    it('should return null for unresolvable relative imports', () => {
+      const files = [
+        makeFile('src/app.ts', {
+          imports: [{ from: './nonexistent', names: ['x'], kind: 'internal' }],
+        }),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      // The import to ./nonexistent can't be resolved, so no reverse deps are created
+      expect(Object.keys(analysis.reverseDeps)).toEqual(['src/app.ts']);
+      expect(analysis.reverseDeps['src/app.ts']).toEqual([]);
+    });
+  });
+
+  describe('findUnusedExports - additional types', () => {
+    it('should detect unused exported classes', () => {
+      const files = [
+        makeFile('lib.ts', {
+          classes: [
+            { name: 'UnusedClass', methods: [], properties: [], exported: true, loc: 10 },
+          ],
+        }),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      expect(analysis.unusedExports.map((u) => u.name)).toContain('UnusedClass');
+    });
+
+    it('should detect unused exported interfaces', () => {
+      const files = [
+        makeFile('lib.ts', {
+          interfaces: [
+            { name: 'UnusedIface', properties: [], exported: true },
+          ],
+        }),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      expect(analysis.unusedExports.map((u) => u.name)).toContain('UnusedIface');
+    });
+
+    it('should detect unused exported enums', () => {
+      const files = [
+        makeFile('lib.ts', {
+          enums: [
+            { name: 'UnusedEnum', members: ['A', 'B'], exported: true },
+          ],
+        }),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      expect(analysis.unusedExports.map((u) => u.name)).toContain('UnusedEnum');
+    });
+
+    it('should detect unused exported constants', () => {
+      const files = [
+        makeFile('lib.ts', {
+          constants: [
+            { name: 'UNUSED_CONST', type: 'string', exported: true },
+          ],
+        }),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      expect(analysis.unusedExports.map((u) => u.name)).toContain('UNUSED_CONST');
+    });
+
+    it('should treat re-exports from barrel files as used', () => {
+      const files = [
+        makeFile('utils/index.ts', {
+          exports: [
+            { from: './helpers.js', names: ['doStuff'], isReExport: true },
+          ],
+        }),
+        makeFile('utils/helpers.ts', {
+          functions: [
+            { name: 'doStuff', params: [], returnType: 'void', exported: true, loc: 1 },
+          ],
+        }),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      const unusedNames = analysis.unusedExports.map((u) => u.name);
+      expect(unusedNames).not.toContain('doStuff');
+    });
+
+    it('should detect unused exported components and hooks', () => {
+      const files = [
+        makeFile('ui.ts', {
+          components: [
+            { name: 'UnusedComp', kind: 'component' as const, params: [], returnType: 'JSX.Element', exported: true, loc: 5 },
+          ],
+          hooks: [
+            { name: 'useUnused', kind: 'hook' as const, params: [], returnType: 'void', exported: true, loc: 3 },
+          ],
+        }),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      const unusedNames = analysis.unusedExports.map((u) => u.name);
+      expect(unusedNames).toContain('UnusedComp');
+      expect(unusedNames).toContain('useUnused');
+    });
+
+    it('should include non-reexport named exports in unused check', () => {
+      const files = [
+        makeFile('lib.ts', {
+          exports: [
+            { names: ['namedExport'], isReExport: false },
+          ],
+        }),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      const unusedNames = analysis.unusedExports.map((u) => u.name);
+      expect(unusedNames).toContain('namedExport');
+    });
+  });
+
+  describe('findCircularDeps - deduplication', () => {
+    it('should deduplicate identical cycles found from different start nodes', () => {
+      // A → B → A forms the same cycle regardless of starting from A or B
+      const files = [
+        makeFile('a.ts', {
+          imports: [{ from: './b.js', names: ['x'], kind: 'internal' }],
+        }),
+        makeFile('b.ts', {
+          imports: [{ from: './a.js', names: ['y'], kind: 'internal' }],
+        }),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      // Should have exactly 1 cycle, not 2
+      expect(analysis.circularDeps.length).toBe(1);
+    });
+
+    it('should handle nodes already visited (seen set prevents revisit)', () => {
+      // A → B → C, A → C (no cycle)
+      const files = [
+        makeFile('a.ts', {
+          imports: [
+            { from: './b.js', names: ['x'], kind: 'internal' },
+            { from: './c.js', names: ['y'], kind: 'internal' },
+          ],
+        }),
+        makeFile('b.ts', {
+          imports: [{ from: './c.js', names: ['z'], kind: 'internal' }],
+        }),
+        makeFile('c.ts'),
+      ];
+      const result = makeResult(files);
+      const analysis = analyzeCode(result);
+
+      expect(analysis.circularDeps.length).toBe(0);
+    });
+  });
+
+  describe('detectEntryPoints - package.json fields', () => {
+    const fs = require('node:fs');
+    const path = require('node:path');
+    const os = require('node:os');
+
+    function withTempPkg(pkg: Record<string, unknown>, filePaths: string[], fn: (tmpDir: string) => void): void {
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'codemap-test-'));
+      try {
+        fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify(pkg));
+        fn(tmpDir);
+      } finally {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+      }
+    }
+
+    it('should detect entry points from package.json main field', () => {
+      withTempPkg({ main: './dist/index.js' }, ['index.ts'], (tmpDir) => {
+        const files = [makeFile('index.ts')];
+        const result = makeResult(files, { root: tmpDir });
+        const analysis = analyzeCode(result);
+
+        expect(analysis.entryPoints).toContain('index.ts');
+      });
+    });
+
+    it('should detect entry points from package.json module field', () => {
+      withTempPkg({ module: './dist/lib.js' }, ['lib.ts'], (tmpDir) => {
+        const files = [makeFile('lib.ts')];
+        const result = makeResult(files, { root: tmpDir });
+        const analysis = analyzeCode(result);
+
+        expect(analysis.entryPoints).toContain('lib.ts');
+      });
+    });
+
+    it('should detect entry points from package.json bin as string', () => {
+      withTempPkg({ bin: './dist/cli.js' }, ['cli.ts'], (tmpDir) => {
+        const files = [makeFile('cli.ts')];
+        const result = makeResult(files, { root: tmpDir });
+        const analysis = analyzeCode(result);
+
+        expect(analysis.entryPoints).toContain('cli.ts');
+      });
+    });
+
+    it('should detect entry points from package.json bin as object', () => {
+      withTempPkg({ bin: { codemap: './dist/cli.js' } }, ['cli.ts'], (tmpDir) => {
+        const files = [makeFile('cli.ts')];
+        const result = makeResult(files, { root: tmpDir });
+        const analysis = analyzeCode(result);
+
+        expect(analysis.entryPoints).toContain('cli.ts');
+      });
+    });
+
+    it('should detect entry points from package.json exports field (nested)', () => {
+      withTempPkg({
+        exports: {
+          '.': { import: './dist/index.js', require: './dist/index.cjs' },
+          './utils': './dist/utils.mjs',
+        },
+      }, ['index.ts', 'utils.ts'], (tmpDir) => {
+        const files = [makeFile('index.ts'), makeFile('utils.ts')];
+        const result = makeResult(files, { root: tmpDir });
+        const analysis = analyzeCode(result);
+
+        expect(analysis.entryPoints).toContain('index.ts');
+        expect(analysis.entryPoints).toContain('utils.ts');
+      });
+    });
+
+    it('should handle malformed package.json gracefully', () => {
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'codemap-test-'));
+      try {
+        fs.writeFileSync(path.join(tmpDir, 'package.json'), '{ invalid json');
+
+        const files = [makeFile('index.ts')];
+        const result = makeResult(files, { root: tmpDir });
+        const analysis = analyzeCode(result);
+
+        // Should not throw, still detect common entry points
+        expect(analysis.entryPoints).toContain('index.ts');
+      } finally {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+      }
+    });
+  });
+
+  describe('createCodeAnalysisPlugin', () => {
+    it('should create a plugin with correct name and version', () => {
+      const plugin = createCodeAnalysisPlugin();
+      expect(plugin.name).toBe('code-analysis');
+      expect(plugin.version).toBe('1.0.0');
+    });
+
+    it('should have install method that does not throw', () => {
+      const plugin = createCodeAnalysisPlugin();
+      const kernel = {} as CodemapKernel;
+      expect(() => plugin.install(kernel)).not.toThrow();
+    });
+
+    it('should attach analysis to result on onScanComplete', async () => {
+      const plugin = createCodeAnalysisPlugin();
+      const files = [
+        makeFile('index.ts'),
+        makeFile('utils.ts'),
+      ];
+      const result = makeResult(files) as ScanResult & { analysis?: CodeAnalysis };
+
+      await plugin.onScanComplete!(result);
+
+      expect(result.analysis).toBeDefined();
+      expect(result.analysis!.reverseDeps).toBeDefined();
+      expect(result.analysis!.orphanFiles).toBeDefined();
+      expect(result.analysis!.unusedExports).toBeDefined();
+      expect(result.analysis!.circularDeps).toBeDefined();
+      expect(result.analysis!.entryPoints).toBeDefined();
     });
   });
 });

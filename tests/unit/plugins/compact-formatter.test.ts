@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createCompactFormatterPlugin } from '../../../src/plugins/core/compact-formatter.js';
-import type { OutputFormatter, ScanResult, CodemapKernel } from '../../../src/types.js';
+import type { OutputFormatter, ScanResult, CodemapKernel, CodeAnalysis } from '../../../src/types.js';
 
 function getFormatter(): OutputFormatter {
   let captured: OutputFormatter | undefined;
@@ -837,5 +837,148 @@ describe('Compact formatter', () => {
     // No derives bracket on the struct line
     expect(structLine).not.toMatch(/\[.*\]/);
 
+  });
+});
+
+describe('Compact formatter - analysis sections', () => {
+  const formatter = getFormatter();
+
+  function makeAnalysis(overrides?: Partial<CodeAnalysis>): CodeAnalysis {
+    return {
+      reverseDeps: {},
+      orphanFiles: [],
+      unusedExports: [],
+      circularDeps: [],
+      entryPoints: [],
+      ...overrides,
+    };
+  }
+
+  it('should include ENTRY POINTS section when entryPoints has items', () => {
+    const result = createMockScanResult({
+      analysis: makeAnalysis({ entryPoints: ['src/index.ts', 'src/cli.ts'] }),
+    });
+    const output = formatter.format(result);
+
+    expect(output).toContain('## ENTRY POINTS');
+    expect(output).toContain('▶ src/index.ts');
+    expect(output).toContain('▶ src/cli.ts');
+  });
+
+  it('should omit ENTRY POINTS section when entryPoints is empty', () => {
+    const result = createMockScanResult({
+      analysis: makeAnalysis({ entryPoints: [] }),
+    });
+    const output = formatter.format(result);
+
+    expect(output).not.toContain('## ENTRY POINTS');
+  });
+
+  it('should include REVERSE DEPS section when there are importers', () => {
+    const result = createMockScanResult({
+      analysis: makeAnalysis({
+        reverseDeps: {
+          'src/utils.ts': ['src/index.ts', 'src/app.ts'],
+          'src/empty.ts': [],
+        },
+      }),
+    });
+    const output = formatter.format(result);
+
+    expect(output).toContain('## REVERSE DEPS');
+    expect(output).toContain('src/utils.ts ← src/index.ts, src/app.ts');
+    // File with no importers should not appear
+    expect(output).not.toContain('src/empty.ts ←');
+  });
+
+  it('should omit REVERSE DEPS section when all importers are empty', () => {
+    const result = createMockScanResult({
+      analysis: makeAnalysis({
+        reverseDeps: { 'a.ts': [], 'b.ts': [] },
+      }),
+    });
+    const output = formatter.format(result);
+
+    expect(output).not.toContain('## REVERSE DEPS');
+  });
+
+  it('should include CIRCULAR DEPS section when cycles exist', () => {
+    const result = createMockScanResult({
+      analysis: makeAnalysis({
+        circularDeps: [['a.ts', 'b.ts', 'a.ts']],
+      }),
+    });
+    const output = formatter.format(result);
+
+    expect(output).toContain('## CIRCULAR DEPS');
+    expect(output).toContain('⟳ a.ts → b.ts → a.ts');
+  });
+
+  it('should omit CIRCULAR DEPS section when no cycles', () => {
+    const result = createMockScanResult({
+      analysis: makeAnalysis({ circularDeps: [] }),
+    });
+    const output = formatter.format(result);
+
+    expect(output).not.toContain('## CIRCULAR DEPS');
+  });
+
+  it('should include ORPHAN FILES section when orphanFiles has items', () => {
+    const result = createMockScanResult({
+      analysis: makeAnalysis({ orphanFiles: ['src/dead.ts', 'src/unused.ts'] }),
+    });
+    const output = formatter.format(result);
+
+    expect(output).toContain('## ORPHAN FILES');
+    expect(output).toContain('⚠ src/dead.ts');
+    expect(output).toContain('⚠ src/unused.ts');
+  });
+
+  it('should omit ORPHAN FILES section when empty', () => {
+    const result = createMockScanResult({
+      analysis: makeAnalysis({ orphanFiles: [] }),
+    });
+    const output = formatter.format(result);
+
+    expect(output).not.toContain('## ORPHAN FILES');
+  });
+
+  it('should include UNUSED EXPORTS section grouped by file', () => {
+    const result = createMockScanResult({
+      analysis: makeAnalysis({
+        unusedExports: [
+          { file: 'lib.ts', name: 'foo' },
+          { file: 'lib.ts', name: 'bar' },
+          { file: 'utils.ts', name: 'baz' },
+        ],
+      }),
+    });
+    const output = formatter.format(result);
+
+    expect(output).toContain('## UNUSED EXPORTS');
+    expect(output).toContain('⚠ lib.ts: foo, bar');
+    expect(output).toContain('⚠ utils.ts: baz');
+  });
+
+  it('should omit UNUSED EXPORTS section when empty', () => {
+    const result = createMockScanResult({
+      analysis: makeAnalysis({ unusedExports: [] }),
+    });
+    const output = formatter.format(result);
+
+    expect(output).not.toContain('## UNUSED EXPORTS');
+  });
+
+  it('should omit all analysis sections when analysis is undefined', () => {
+    const result = createMockScanResult();
+    // Ensure no analysis property
+    delete (result as any).analysis;
+    const output = formatter.format(result);
+
+    expect(output).not.toContain('## ENTRY POINTS');
+    expect(output).not.toContain('## REVERSE DEPS');
+    expect(output).not.toContain('## CIRCULAR DEPS');
+    expect(output).not.toContain('## ORPHAN FILES');
+    expect(output).not.toContain('## UNUSED EXPORTS');
   });
 });
